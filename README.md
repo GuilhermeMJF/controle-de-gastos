@@ -43,7 +43,7 @@ controle-de-gastos/
 
 ## 🚀 Como rodar
 
-### Opção 1: com Docker (mais fácil)
+### Opção 1: com Docker
 
 Precisa ter o [Docker](https://www.docker.com/) instalado.
 
@@ -134,4 +134,4 @@ Exemplo de gasto:
 
 ## 👤 Autor
 
-Feito por [Guilherme](https://github.com/GuilhermeMJF).
+Feito por [Luiz Guilherme](https://github.com/GuilhermeMJF).
