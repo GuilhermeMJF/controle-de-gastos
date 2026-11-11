@@ -109,8 +109,8 @@ Variáveis de ambiente da API:
 | `JWT_SECRET` | Chave que assina os tokens de login. **Obrigatório em produção**, com um valor longo e aleatório |
 | `CORS_ORIGINS` | Endereços do front-end que podem chamar a API, separados por vírgula |
 | `FRONTEND_URL` | Endereço do site usado no link do e-mail. Se não for definido, usa o primeiro de `CORS_ORIGINS` |
-| `BREVO_API_KEY` | Chave da API do Brevo, para enviar e-mails (opcional) |
-| `EMAIL_REMETENTE` | E-mail verificado no Brevo que aparece como remetente (opcional) |
+| `BREVO_API_KEY` | Chave da API do Brevo, para enviar e-mails|
+| `EMAIL_REMETENTE` | E-mail verificado no Brevo que aparece como remetente|
 
 **3. Front-end** (em outro terminal)
 
@@ -177,7 +177,7 @@ Exemplo de gasto:
 - [x] Deploy online (Neon para o banco, Render para a API e Vercel para o front)
 - [x] Recuperação de senha por e-mail
 
-Acesse o site:https://controle-de-gastos-psi-six.vercel.app/
+Acesse o site: https://controle-de-gastos-psi-six.vercel.app/
 
 ## 👤 Autor
 
