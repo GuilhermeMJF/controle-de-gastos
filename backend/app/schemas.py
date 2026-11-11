@@ -100,3 +100,38 @@ class GastoOut(GastoBase):
 
     id: int
     categoria: CategoriaOut
+
+
+# Valores calculados (como o total gasto no mês) podem ser zero, então não usam o
+# "maior que zero" do Dinheiro; só são convertidos para número no JSON.
+ValorEmReais = Annotated[Decimal, PlainSerializer(float, return_type=float, when_used="json")]
+
+
+class LimiteIn(BaseModel):
+    valor: Dinheiro
+
+
+class LimiteOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: int
+    categoria_id: int | None
+    categoria: CategoriaOut | None
+    valor: ValorEmReais
+
+
+class SituacaoLimite(BaseModel):
+    limite: ValorEmReais
+    gasto: ValorEmReais
+    porcentagem: float
+    restante: ValorEmReais
+
+
+class SituacaoLimiteCategoria(SituacaoLimite):
+    categoria: CategoriaOut
+
+
+class ResumoLimitesOut(BaseModel):
+    mes: str
+    total: SituacaoLimite | None
+    categorias: list[SituacaoLimiteCategoria]

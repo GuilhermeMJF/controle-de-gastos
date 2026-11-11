@@ -1,10 +1,10 @@
 from fastapi import APIRouter, Depends, HTTPException, Response, status
-from sqlalchemy import func, select
+from sqlalchemy import delete, func, select
 from sqlalchemy.orm import Session
 
 from ..database import get_db
 from ..dependencias import get_usuario_atual
-from ..models import Categoria, Gasto
+from ..models import Categoria, Gasto, Limite
 from ..schemas import CategoriaCreate, CategoriaOut
 
 # As categorias são compartilhadas entre todos, mas só quem está logado acessa
@@ -67,6 +67,8 @@ def excluir_categoria(categoria_id: int, db: Session = Depends(get_db)):
             status.HTTP_409_CONFLICT,
             "Essa categoria tem gastos cadastrados. Mude ou exclua esses gastos antes.",
         )
+    # Os limites definidos para essa categoria deixam de fazer sentido
+    db.execute(delete(Limite).where(Limite.categoria_id == categoria_id))
     db.delete(categoria)
     db.commit()
     return Response(status_code=status.HTTP_204_NO_CONTENT)

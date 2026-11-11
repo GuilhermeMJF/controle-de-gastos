@@ -67,3 +67,23 @@ class Gasto(Base):
 
     categoria: Mapped[Categoria] = relationship(back_populates="gastos")
     usuario: Mapped[Usuario] = relationship(back_populates="gastos")
+
+
+class Limite(Base):
+    """
+    Limite de gastos por mês, que vale para todos os meses até ser alterado.
+    Com categoria_id vazio (None), é o limite total do mês; com categoria, vale só para ela.
+    """
+
+    __tablename__ = "limites"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    usuario_id: Mapped[int] = mapped_column(
+        ForeignKey("usuarios.id", ondelete="CASCADE"), index=True
+    )
+    categoria_id: Mapped[int | None] = mapped_column(
+        ForeignKey("categorias.id", ondelete="CASCADE"), nullable=True
+    )
+    valor: Mapped[Decimal] = mapped_column(Numeric(12, 2))
+
+    categoria: Mapped[Categoria | None] = relationship()

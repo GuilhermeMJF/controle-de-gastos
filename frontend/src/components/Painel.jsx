@@ -1,7 +1,9 @@
 import { useCallback, useEffect, useState } from "react";
 import { api } from "../api.js";
 import { intervaloDoMes, mesAtual } from "../utils.js";
+import EditorLimites from "./EditorLimites.jsx";
 import GastoForm from "./GastoForm.jsx";
+import LimitesMes from "./LimitesMes.jsx";
 import ListaGastos from "./ListaGastos.jsx";
 import NovaCategoria from "./NovaCategoria.jsx";
 import ResumoCategorias from "./ResumoCategorias.jsx";
@@ -14,6 +16,9 @@ export default function Painel({ usuario, onSair }) {
   const [gastoEmEdicao, setGastoEmEdicao] = useState(null);
   const [carregando, setCarregando] = useState(true);
   const [erro, setErro] = useState("");
+  const [limites, setLimites] = useState([]);
+  const [resumoLimites, setResumoLimites] = useState(null);
+  const [editandoLimites, setEditandoLimites] = useState(false);
 
   const carregarGastos = useCallback(async () => {
     setCarregando(true);
@@ -31,9 +36,29 @@ export default function Painel({ usuario, onSair }) {
     }
   }, [mes, categoriaFiltro]);
 
+  // Limites definidos + quanto já foi gasto no mês escolhido.
+  // Não depende do filtro de categoria: o limite sempre considera o mês inteiro.
+  const carregarLimites = useCallback(async () => {
+    if (!mes) return;
+    try {
+      const [lista, resumo] = await Promise.all([
+        api.listarLimites(),
+        api.resumoDosLimites(mes),
+      ]);
+      setLimites(lista);
+      setResumoLimites(resumo);
+    } catch (e) {
+      setErro(e.message);
+    }
+  }, [mes]);
+
   useEffect(() => {
     api.listarCategorias().then(setCategorias).catch((e) => setErro(e.message));
   }, []);
+
+  useEffect(() => {
+    carregarLimites();
+  }, [carregarLimites]);
 
   useEffect(() => {
     carregarGastos();
@@ -46,7 +71,7 @@ export default function Painel({ usuario, onSair }) {
     } else {
       await api.criarGasto(dados);
     }
-    await carregarGastos();
+    await Promise.all([carregarGastos(), carregarLimites()]);
   }
 
   async function excluirGasto(gasto) {
@@ -54,10 +79,22 @@ export default function Painel({ usuario, onSair }) {
     try {
       await api.excluirGasto(gasto.id);
       if (gastoEmEdicao?.id === gasto.id) setGastoEmEdicao(null);
-      await carregarGastos();
+      await Promise.all([carregarGastos(), carregarLimites()]);
     } catch (e) {
       setErro(e.message);
     }
+  }
+
+  async function salvarLimites(alteracoes) {
+    for (const { categoriaId, valor } of alteracoes) {
+      if (valor == null) {
+        await api.removerLimite(categoriaId);
+      } else {
+        await api.definirLimite(categoriaId, valor);
+      }
+    }
+    setEditandoLimites(false);
+    await carregarLimites();
   }
 
   async function criarCategoria(dados) {
@@ -118,6 +155,23 @@ export default function Painel({ usuario, onSair }) {
               </select>
             </label>
           </div>
+
+          {editandoLimites ? (
+            <EditorLimites
+              categorias={categorias}
+              limites={limites}
+              onSalvar={salvarLimites}
+              onCancelar={() => setEditandoLimites(false)}
+            />
+          ) : (
+            mes && (
+              <LimitesMes
+                mes={mes}
+                resumo={resumoLimites}
+                onEditar={() => setEditandoLimites(true)}
+              />
+            )
+          )}
 
           <ResumoCategorias gastos={gastos} />
 

@@ -79,4 +79,17 @@ export const api = {
   atualizarGasto: (id, dados) =>
     request(`/gastos/${id}`, { method: "PUT", body: JSON.stringify(dados) }),
   excluirGasto: (id) => request(`/gastos/${id}`, { method: "DELETE" }),
+
+  listarLimites: () => request("/limites"),
+  resumoDosLimites: (mes) => request(`/limites/resumo?mes=${encodeURIComponent(mes)}`),
+  // categoriaId vazio (null) = limite total do mês
+  definirLimite: (categoriaId, valor) =>
+    request(categoriaId == null ? "/limites/total" : `/limites/categorias/${categoriaId}`, {
+      method: "PUT",
+      body: JSON.stringify({ valor }),
+    }),
+  removerLimite: (categoriaId) =>
+    request(categoriaId == null ? "/limites/total" : `/limites/categorias/${categoriaId}`, {
+      method: "DELETE",
+    }),
 };

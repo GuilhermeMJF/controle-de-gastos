@@ -32,3 +32,13 @@ export function intervaloDoMes(mes) {
   const ultimoDia = new Date(ano, numeroMes, 0).getDate();
   return { inicio: `${mes}-01`, fim: `${mes}-${doisDigitos(ultimoDia)}` };
 }
+
+// "2026-11" -> "novembro de 2026"
+export function nomeDoMes(mes) {
+  if (!mes) return "";
+  const [ano, numeroMes] = mes.split("-").map(Number);
+  return new Date(ano, numeroMes - 1, 1).toLocaleDateString("pt-BR", {
+    month: "long",
+    year: "numeric",
+  });
+}

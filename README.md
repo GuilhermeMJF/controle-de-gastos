@@ -6,6 +6,7 @@ Aplicação web para registrar gastos pessoais e organizá-los por categoria. Vo
 
 - Cadastro e login com e-mail e senha: cada pessoa vê só os próprios gastos
 - Recuperação de senha por e-mail, com link que vale por 30 minutos
+- Limite de gastos mensal, no total e por categoria, com barra que fica amarela a partir de 80% e vermelha ao estourar
 - Cadastrar, editar e excluir gastos (descrição, valor, data e categoria)
 - Filtrar gastos por mês e por categoria
 - Total do período e participação de cada categoria no total
@@ -59,7 +60,7 @@ controle-de-gastos/
 │       ├── App.jsx          # decide entre a tela de login e o painel
 │       ├── api.js           # chamadas à API (envia o token)
 │       ├── sessao.js        # guarda o login no navegador
-│       └── components/      # login, nova senha, painel, formulário, lista e resumo
+│       └── components/      # login, nova senha, painel, formulário, lista, resumo e limites
 └── docker-compose.yml
 ```
 
@@ -149,6 +150,12 @@ Com exceção do cadastro, do login e da recuperação de senha, todas as rotas 
 | POST | `/gastos` | Cria um gasto |
 | PUT | `/gastos/{id}` | Atualiza um gasto |
 | DELETE | `/gastos/{id}` | Exclui um gasto |
+| GET | `/limites` | Lista os limites do usuário |
+| PUT | `/limites/total` | Define (ou altera) o limite total do mês |
+| DELETE | `/limites/total` | Remove o limite total |
+| PUT | `/limites/categorias/{id}` | Define (ou altera) o limite de uma categoria |
+| DELETE | `/limites/categorias/{id}` | Remove o limite de uma categoria |
+| GET | `/limites/resumo?mes=AAAA-MM` | Quanto já foi gasto no mês em comparação com cada limite |
 
 Exemplo de gasto:
 
@@ -164,7 +171,7 @@ Exemplo de gasto:
 ## 🗺️ Próximos passos
 
 - [ ] Resumo mensal com gráfico de evolução
-- [ ] Metas e limite de orçamento por categoria
+- [x] Limite de gastos mensal, no total e por categoria
 - [x] Login de usuários (cada pessoa vê só os próprios gastos)
 - [ ] Migrações de banco com Alembic
 - [x] Deploy online (Neon para o banco, Render para a API e Vercel para o front)

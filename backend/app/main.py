@@ -8,7 +8,7 @@ from sqlalchemy import inspect, select, text
 from .config import CORS_ORIGINS, DATABASE_URL, JWT_SECRET, JWT_SECRET_PADRAO
 from .database import Base, SessionLocal, engine
 from .models import Categoria, Gasto
-from .routers import auth, categorias, gastos
+from .routers import auth, categorias, gastos, limites
 
 logger = logging.getLogger("controle_de_gastos")
 
@@ -91,7 +91,7 @@ app = FastAPI(
         "**POST /auth/login**), copie o `access_token` da resposta e cole no botão "
         "**Authorize**."
     ),
-    version="0.3.0",
+    version="0.4.0",
     lifespan=lifespan,
 )
 
@@ -105,6 +105,7 @@ app.add_middleware(
 app.include_router(auth.router)
 app.include_router(categorias.router)
 app.include_router(gastos.router)
+app.include_router(limites.router)
 
 
 @app.get("/health", tags=["Status"])
