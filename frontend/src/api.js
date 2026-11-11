@@ -41,7 +41,7 @@ async function request(caminho, opcoes = {}) {
 // Deixa as mensagens de validação mais amigáveis nos campos do login
 function traduzirErroDeValidacao(erro) {
   const campo = erro.loc?.at(-1);
-  if (campo === "senha" && erro.type === "string_too_short") {
+  if ((campo === "senha" || campo === "nova_senha") && erro.type === "string_too_short") {
     return "A senha precisa ter pelo menos 8 caracteres";
   }
   if (campo === "email") return "E-mail inválido";
@@ -61,6 +61,13 @@ export const api = {
   cadastrar: (dados) =>
     request("/auth/cadastro", { method: "POST", body: JSON.stringify(dados) }),
   entrar: (dados) => request("/auth/login", { method: "POST", body: JSON.stringify(dados) }),
+  esqueciSenha: (email) =>
+    request("/auth/esqueci-senha", { method: "POST", body: JSON.stringify({ email }) }),
+  redefinirSenha: (token, novaSenha) =>
+    request("/auth/redefinir-senha", {
+      method: "POST",
+      body: JSON.stringify({ token, nova_senha: novaSenha }),
+    }),
 
   listarCategorias: () => request("/categorias"),
   criarCategoria: (dados) =>

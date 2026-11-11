@@ -4,7 +4,7 @@ from sqlalchemy.orm import Session
 
 from .database import get_db
 from .models import Usuario
-from .seguranca import ler_usuario_do_token
+from .seguranca import ler_token
 
 # auto_error=False: assim a mensagem de erro fica em português
 _bearer = HTTPBearer(auto_error=False, description="Token recebido no login")
@@ -25,8 +25,9 @@ def get_usuario_atual(
     if credenciais is None:
         raise _nao_autorizado("Faça login para continuar")
 
-    usuario_id = ler_usuario_do_token(credenciais.credentials)
-    usuario = db.get(Usuario, usuario_id) if usuario_id is not None else None
-    if usuario is None:
+    dados = ler_token(credenciais.credentials)
+    usuario = db.get(Usuario, dados[0]) if dados is not None else None
+    # versao_sessao diferente: a senha foi redefinida depois desse login
+    if usuario is None or dados[1] != usuario.versao_sessao:
         raise _nao_autorizado("Sessão inválida ou expirada. Entre novamente.")
     return usuario

@@ -29,3 +29,16 @@ CORS_ORIGINS = [
     for origem in os.getenv("CORS_ORIGINS", "http://localhost:5173").split(",")
     if origem.strip()
 ]
+# Endereço do site, usado para montar o link de redefinição de senha.
+# Se não for definido, usa o primeiro endereço de CORS_ORIGINS.
+FRONTEND_URL = os.getenv("FRONTEND_URL", CORS_ORIGINS[0] if CORS_ORIGINS else "").rstrip("/")
+
+# Envio de e-mails pelo Brevo (https://www.brevo.com).
+# Sem BREVO_API_KEY, os e-mails não são enviados: o conteúdo aparece no log da API,
+# o que é útil para testar no computador.
+BREVO_API_KEY = os.getenv("BREVO_API_KEY", "")
+EMAIL_REMETENTE = os.getenv("EMAIL_REMETENTE", "")
+NOME_REMETENTE = os.getenv("NOME_REMETENTE", "Controle de Gastos")
+
+# Quanto tempo o link de redefinição de senha vale
+REDEFINICAO_EXPIRA_MINUTOS = int(os.getenv("REDEFINICAO_EXPIRA_MINUTOS", "30"))

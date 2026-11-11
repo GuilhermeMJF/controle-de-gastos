@@ -3,7 +3,7 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from sqlalchemy import inspect, select
+from sqlalchemy import inspect, select, text
 
 from .config import CORS_ORIGINS, DATABASE_URL, JWT_SECRET, JWT_SECRET_PADRAO
 from .database import Base, SessionLocal, engine
@@ -38,9 +38,33 @@ def _atualizar_tabela_de_gastos_antiga():
         Gasto.__table__.drop(engine)
 
 
+def _adicionar_colunas_novas():
+    """
+    O create_all só cria tabelas que ainda não existem; ele não adiciona colunas
+    em tabelas antigas. Aqui entram as colunas criadas depois da primeira versão.
+    (Quando o projeto crescer, o ideal é trocar isso por migrações com Alembic.)
+    """
+    colunas_novas = {
+        "usuarios": {
+            "versao_sessao": "ALTER TABLE usuarios ADD COLUMN versao_sessao INTEGER NOT NULL DEFAULT 0",
+        },
+    }
+    inspetor = inspect(engine)
+    for tabela, colunas in colunas_novas.items():
+        if not inspetor.has_table(tabela):
+            continue
+        existentes = {coluna["name"] for coluna in inspetor.get_columns(tabela)}
+        for coluna, comando in colunas.items():
+            if coluna not in existentes:
+                logger.warning("Adicionando a coluna %s.%s", tabela, coluna)
+                with engine.begin() as conexao:
+                    conexao.execute(text(comando))
+
+
 def preparar_banco():
     """Cria as tabelas e, se o banco estiver vazio, as categorias padrão."""
     _atualizar_tabela_de_gastos_antiga()
+    _adicionar_colunas_novas()
     Base.metadata.create_all(engine)
     with SessionLocal() as db:
         if db.scalar(select(Categoria.id).limit(1)) is None:
@@ -67,7 +91,7 @@ app = FastAPI(
         "**POST /auth/login**), copie o `access_token` da resposta e cole no botão "
         "**Authorize**."
     ),
-    version="0.2.0",
+    version="0.3.0",
     lifespan=lifespan,
 )
 

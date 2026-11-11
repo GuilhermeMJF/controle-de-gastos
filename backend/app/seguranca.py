@@ -43,20 +43,36 @@ def verificar_senha(senha: str, hash_salvo: str) -> bool:
 HASH_FALSO = gerar_hash_senha(secrets.token_urlsafe(16))
 
 
-def criar_token(usuario_id: int) -> str:
+def criar_token(usuario_id: int, versao_sessao: int = 0) -> str:
     agora = datetime.now(timezone.utc)
     dados = {
         "sub": str(usuario_id),
+        "ver": versao_sessao,
         "iat": agora,
         "exp": agora + timedelta(minutes=JWT_EXPIRA_MINUTOS),
     }
     return jwt.encode(dados, JWT_SECRET, algorithm=_ALGORITMO_JWT)
 
 
-def ler_usuario_do_token(token: str) -> int | None:
-    """Devolve o id do usuário, ou None se o token for inválido ou estiver vencido."""
+def ler_token(token: str) -> tuple[int, int] | None:
+    """
+    Devolve (id do usuário, versão da sessão), ou None se o token for inválido
+    ou estiver vencido.
+    """
     try:
         dados = jwt.decode(token, JWT_SECRET, algorithms=[_ALGORITMO_JWT])
-        return int(dados["sub"])
-    except (jwt.PyJWTError, KeyError, ValueError):
+        return int(dados["sub"]), int(dados.get("ver", 0))
+    except (jwt.PyJWTError, KeyError, ValueError, TypeError):
         return None
+
+
+def gerar_token_de_redefinicao() -> tuple[str, str]:
+    """Devolve (token que vai no link do e-mail, hash que fica no banco)."""
+    token = secrets.token_urlsafe(32)
+    return token, hash_do_token_de_redefinicao(token)
+
+
+def hash_do_token_de_redefinicao(token: str) -> str:
+    # O token é longo e aleatório, então um SHA-256 simples já basta.
+    # Assim, mesmo quem tiver acesso ao banco não consegue usar os links.
+    return hashlib.sha256(token.encode()).hexdigest()

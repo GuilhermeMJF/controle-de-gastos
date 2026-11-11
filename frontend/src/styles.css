@@ -8,6 +8,8 @@
   --primaria-escura: #115e59;
   --erro: #b91c1c;
   --erro-fundo: #fef2f2;
+  --sucesso: #166534;
+  --sucesso-fundo: #f0fdf4;
   --raio: 12px;
   color-scheme: light;
 }
@@ -23,6 +25,8 @@
     --primaria-escura: #0d9488;
     --erro: #fca5a5;
     --erro-fundo: #3b1d1d;
+    --sucesso: #86efac;
+    --sucesso-fundo: #14291c;
     color-scheme: dark;
   }
 }
@@ -370,4 +374,31 @@ button.icone:hover {
 
 .topo-logado button {
   flex-shrink: 0;
+}
+
+/* Recuperação de senha */
+.explicacao {
+  margin: 0;
+  color: var(--suave);
+  font-size: 0.9rem;
+}
+
+.sucesso {
+  margin: 0;
+  padding: 10px 12px;
+  border-radius: 8px;
+  background: var(--sucesso-fundo);
+  color: var(--sucesso);
+  font-size: 0.9rem;
+}
+
+.rotulo-com-link {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}
+
+.rotulo-com-link button.link {
+  padding: 0;
+  font-size: 0.85rem;
 }

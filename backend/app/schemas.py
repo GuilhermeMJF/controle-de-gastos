@@ -42,6 +42,19 @@ class UsuarioOut(BaseModel):
     email: str
 
 
+class EsqueciSenhaIn(BaseModel):
+    email: Email
+
+
+class RedefinirSenhaIn(BaseModel):
+    token: str = Field(min_length=20, max_length=200)
+    nova_senha: str = Field(min_length=8, max_length=128)
+
+
+class MensagemOut(BaseModel):
+    mensagem: str
+
+
 class TokenOut(BaseModel):
     access_token: str
     token_type: str = "bearer"

@@ -1,7 +1,7 @@
 from datetime import date, datetime
 from decimal import Decimal
 
-from sqlalchemy import Date, DateTime, ForeignKey, Numeric, String, func
+from sqlalchemy import Date, DateTime, ForeignKey, Integer, Numeric, String, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from .database import Base
@@ -17,10 +17,28 @@ class Usuario(Base):
     criado_em: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now()
     )
+    # Vai junto no token de login. Quando a senha é redefinida, o número aumenta
+    # e todos os tokens antigos (de qualquer aparelho) deixam de valer.
+    versao_sessao: Mapped[int] = mapped_column(Integer, default=0, server_default="0")
 
     gastos: Mapped[list["Gasto"]] = relationship(
         back_populates="usuario", cascade="all, delete-orphan"
     )
+
+
+class RedefinicaoSenha(Base):
+    """Pedido de "esqueci minha senha". Guarda só o hash do token enviado por e-mail."""
+
+    __tablename__ = "redefinicoes_senha"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    usuario_id: Mapped[int] = mapped_column(
+        ForeignKey("usuarios.id", ondelete="CASCADE"), index=True
+    )
+    token_hash: Mapped[str] = mapped_column(String(64), unique=True, index=True)
+    criado_em: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    expira_em: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    usado_em: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
 
 
 class Categoria(Base):

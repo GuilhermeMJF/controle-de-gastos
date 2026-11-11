@@ -21,6 +21,9 @@ services:
       DATABASE_URL: postgresql+psycopg://${POSTGRES_USER:-gastos}:${POSTGRES_PASSWORD:-gastos}@db:5432/${POSTGRES_DB:-gastos}
       CORS_ORIGINS: http://localhost:5173
       JWT_SECRET: ${JWT_SECRET:-chave-de-desenvolvimento-local-nao-use-em-producao}
+      # Opcional: sem estas duas, o link de redefinição de senha aparece no terminal
+      BREVO_API_KEY: ${BREVO_API_KEY:-}
+      EMAIL_REMETENTE: ${EMAIL_REMETENTE:-}
     ports:
       - "8000:8000"
     depends_on:
