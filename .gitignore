@@ -1,0 +1,26 @@
+# Variáveis de ambiente (nunca suba senhas)
+.env
+.env.local
+*.env.local
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+.coverage
+htmlcov/
+*.db
+*.sqlite3
+
+# Node
+node_modules/
+dist/
+npm-debug.log*
+
+# Editores e sistema
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
