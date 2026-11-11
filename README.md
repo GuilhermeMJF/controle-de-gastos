@@ -132,6 +132,8 @@ Exemplo de gasto:
 - [ ] Migrações de banco com Alembic
 - [ ] Deploy online (ex.: Render para a API e Vercel para o front)
 
+Acesse o site:https://controle-de-gastos-psi-six.vercel.app/
+
 ## 👤 Autor
 
 Feito por [Luiz Guilherme](https://github.com/GuilhermeMJF).
