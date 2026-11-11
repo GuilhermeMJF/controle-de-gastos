@@ -3,10 +3,16 @@ from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
 from ..database import get_db
+from ..dependencias import get_usuario_atual
 from ..models import Categoria, Gasto
 from ..schemas import CategoriaCreate, CategoriaOut
 
-router = APIRouter(prefix="/categorias", tags=["Categorias"])
+# As categorias são compartilhadas entre todos, mas só quem está logado acessa
+router = APIRouter(
+    prefix="/categorias",
+    tags=["Categorias"],
+    dependencies=[Depends(get_usuario_atual)],
+)
 
 
 def _buscar_ou_404(db: Session, categoria_id: int) -> Categoria:

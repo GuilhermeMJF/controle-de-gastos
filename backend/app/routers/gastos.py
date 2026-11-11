@@ -5,15 +5,18 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session, selectinload
 
 from ..database import get_db
-from ..models import Categoria, Gasto
+from ..dependencias import get_usuario_atual
+from ..models import Categoria, Gasto, Usuario
 from ..schemas import GastoCreate, GastoOut
 
 router = APIRouter(prefix="/gastos", tags=["Gastos"])
 
 
-def _buscar_ou_404(db: Session, gasto_id: int) -> Gasto:
+def _buscar_ou_404(db: Session, gasto_id: int, usuario: Usuario) -> Gasto:
     gasto = db.get(Gasto, gasto_id, options=[selectinload(Gasto.categoria)])
-    if gasto is None:
+    # Gasto de outra pessoa responde igual a gasto inexistente,
+    # para não revelar que aquele id existe
+    if gasto is None or gasto.usuario_id != usuario.id:
         raise HTTPException(status.HTTP_404_NOT_FOUND, "Gasto não encontrado")
     return gasto
 
@@ -31,13 +34,18 @@ def listar_gastos(
     inicio: date | None = Query(None, description="Data inicial (inclusive), AAAA-MM-DD"),
     fim: date | None = Query(None, description="Data final (inclusive), AAAA-MM-DD"),
     db: Session = Depends(get_db),
+    usuario: Usuario = Depends(get_usuario_atual),
 ):
     if inicio and fim and inicio > fim:
         raise HTTPException(
             status.HTTP_422_UNPROCESSABLE_ENTITY, "A data inicial é maior que a final"
         )
 
-    consulta = select(Gasto).options(selectinload(Gasto.categoria))
+    consulta = (
+        select(Gasto)
+        .options(selectinload(Gasto.categoria))
+        .where(Gasto.usuario_id == usuario.id)
+    )
     if categoria_id is not None:
         consulta = consulta.where(Gasto.categoria_id == categoria_id)
     if inicio is not None:
@@ -50,14 +58,22 @@ def listar_gastos(
 
 
 @router.get("/{gasto_id}", response_model=GastoOut)
-def obter_gasto(gasto_id: int, db: Session = Depends(get_db)):
-    return _buscar_ou_404(db, gasto_id)
+def obter_gasto(
+    gasto_id: int,
+    db: Session = Depends(get_db),
+    usuario: Usuario = Depends(get_usuario_atual),
+):
+    return _buscar_ou_404(db, gasto_id, usuario)
 
 
 @router.post("", response_model=GastoOut, status_code=status.HTTP_201_CREATED)
-def criar_gasto(dados: GastoCreate, db: Session = Depends(get_db)):
+def criar_gasto(
+    dados: GastoCreate,
+    db: Session = Depends(get_db),
+    usuario: Usuario = Depends(get_usuario_atual),
+):
     _validar_categoria(db, dados.categoria_id)
-    gasto = Gasto(**dados.model_dump())
+    gasto = Gasto(**dados.model_dump(), usuario_id=usuario.id)
     gasto.descricao = gasto.descricao.strip()
     db.add(gasto)
     db.commit()
@@ -66,8 +82,13 @@ def criar_gasto(dados: GastoCreate, db: Session = Depends(get_db)):
 
 
 @router.put("/{gasto_id}", response_model=GastoOut)
-def atualizar_gasto(gasto_id: int, dados: GastoCreate, db: Session = Depends(get_db)):
-    gasto = _buscar_ou_404(db, gasto_id)
+def atualizar_gasto(
+    gasto_id: int,
+    dados: GastoCreate,
+    db: Session = Depends(get_db),
+    usuario: Usuario = Depends(get_usuario_atual),
+):
+    gasto = _buscar_ou_404(db, gasto_id, usuario)
     _validar_categoria(db, dados.categoria_id)
     for campo, valor in dados.model_dump().items():
         setattr(gasto, campo, valor)
@@ -78,8 +99,12 @@ def atualizar_gasto(gasto_id: int, dados: GastoCreate, db: Session = Depends(get
 
 
 @router.delete("/{gasto_id}", status_code=status.HTTP_204_NO_CONTENT)
-def excluir_gasto(gasto_id: int, db: Session = Depends(get_db)):
-    gasto = _buscar_ou_404(db, gasto_id)
+def excluir_gasto(
+    gasto_id: int,
+    db: Session = Depends(get_db),
+    usuario: Usuario = Depends(get_usuario_atual),
+):
+    gasto = _buscar_ou_404(db, gasto_id, usuario)
     db.delete(gasto)
     db.commit()
     return Response(status_code=status.HTTP_204_NO_CONTENT)

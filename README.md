@@ -4,11 +4,19 @@ Aplicação web para registrar gastos pessoais e organizá-los por categoria. Vo
 
 ## ✨ Funcionalidades
 
+- Cadastro e login com e-mail e senha: cada pessoa vê só os próprios gastos
 - Cadastrar, editar e excluir gastos (descrição, valor, data e categoria)
 - Filtrar gastos por mês e por categoria
 - Total do período e participação de cada categoria no total
 - Categorias padrão já criadas (Alimentação, Transporte, Moradia, Lazer, Saúde, Outros) e opção de criar novas com cor própria
 - Validações na API: valor positivo com no máximo 2 casas decimais, categoria existente, nomes de categoria sem repetição e proteção contra excluir categoria em uso
+
+## 🔐 Como funciona o login
+
+- As senhas nunca são guardadas: o banco armazena só um hash **scrypt** com sal aleatório.
+- Ao entrar, a API devolve um **token JWT** válido por 7 dias. O front-end envia esse token no cabeçalho `Authorization: Bearer ...` de cada pedido.
+- Todas as rotas de gastos e categorias exigem login. Os gastos são separados por usuário; as categorias são compartilhadas entre todos.
+- Login com e-mail inexistente e com senha errada dão a mesma resposta, para não revelar quais e-mails estão cadastrados.
 
 ## 🛠️ Tecnologias
 
@@ -31,13 +39,16 @@ controle-de-gastos/
 │   │   ├── database.py      # conexão com o banco
 │   │   ├── models.py        # tabelas (SQLAlchemy)
 │   │   ├── schemas.py       # validação de entrada e saída (Pydantic)
-│   │   └── routers/         # rotas de categorias e gastos
+│   │   ├── seguranca.py     # hash de senha e tokens JWT
+│   │   ├── dependencias.py  # descobre qual usuário está logado
+│   │   └── routers/         # rotas de login, categorias e gastos
 │   └── tests/               # testes automatizados da API
 ├── frontend/
 │   └── src/
-│       ├── App.jsx          # tela principal
-│       ├── api.js           # chamadas à API
-│       └── components/      # formulário, lista, resumo e nova categoria
+│       ├── App.jsx          # decide entre a tela de login e o painel
+│       ├── api.js           # chamadas à API (envia o token)
+│       ├── sessao.js        # guarda o login no navegador
+│       └── components/      # login, painel, formulário, lista e resumo
 └── docker-compose.yml
 ```
 
@@ -78,8 +89,13 @@ pip install -r requirements.txt
 uvicorn app.main:app --reload
 ```
 
-Para usar outro banco, defina a variável `DATABASE_URL`, por exemplo:
-`postgresql+psycopg://usuario:senha@localhost:5432/meubanco`
+Variáveis de ambiente da API:
+
+| Variável | Para que serve |
+| --- | --- |
+| `DATABASE_URL` | Endereço do banco, ex.: `postgresql+psycopg://usuario:senha@localhost:5432/meubanco` |
+| `JWT_SECRET` | Chave que assina os tokens de login. **Obrigatório em produção**, com um valor longo e aleatório |
+| `CORS_ORIGINS` | Endereços do front-end que podem chamar a API, separados por vírgula |
 
 **3. Front-end** (em outro terminal)
 
@@ -101,13 +117,18 @@ pytest
 
 ## 🔌 Rotas da API
 
+Com exceção do cadastro e do login, todas as rotas exigem o cabeçalho `Authorization: Bearer <token>`.
+
 | Método | Rota | Descrição |
 | --- | --- | --- |
+| POST | `/auth/cadastro` | Cria uma conta e já devolve o token |
+| POST | `/auth/login` | Entra com e-mail e senha e devolve o token |
+| GET | `/auth/me` | Mostra o usuário logado |
 | GET | `/categorias` | Lista as categorias |
 | POST | `/categorias` | Cria uma categoria |
 | PUT | `/categorias/{id}` | Atualiza uma categoria |
 | DELETE | `/categorias/{id}` | Exclui uma categoria sem gastos |
-| GET | `/gastos` | Lista gastos (filtros: `categoria_id`, `inicio`, `fim`) |
+| GET | `/gastos` | Lista os gastos do usuário logado (filtros: `categoria_id`, `inicio`, `fim`) |
 | GET | `/gastos/{id}` | Detalha um gasto |
 | POST | `/gastos` | Cria um gasto |
 | PUT | `/gastos/{id}` | Atualiza um gasto |
@@ -128,9 +149,10 @@ Exemplo de gasto:
 
 - [ ] Resumo mensal com gráfico de evolução
 - [ ] Metas e limite de orçamento por categoria
-- [ ] Login de usuários (cada pessoa vê só os próprios gastos)
+- [x] Login de usuários (cada pessoa vê só os próprios gastos)
 - [ ] Migrações de banco com Alembic
-- [ ] Deploy online (ex.: Render para a API e Vercel para o front)
+- [x] Deploy online (Neon para o banco, Render para a API e Vercel para o front)
+- [ ] Recuperação de senha por e-mail
 
 Acesse o site:https://controle-de-gastos-psi-six.vercel.app/
 

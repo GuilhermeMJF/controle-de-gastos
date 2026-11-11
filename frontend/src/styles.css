@@ -322,3 +322,52 @@ button.icone:hover {
   text-align: center;
   margin: 12px 0;
 }
+
+/* Login */
+.tela-login {
+  max-width: 400px;
+  margin: 0 auto;
+  padding: 48px 16px;
+}
+
+.centralizado {
+  text-align: center;
+}
+
+.tela-login .formulario button[type="submit"] {
+  width: 100%;
+}
+
+.dica {
+  color: var(--suave);
+  font-size: 0.8rem;
+}
+
+.alternar {
+  margin: 0;
+  text-align: center;
+  font-size: 0.9rem;
+  color: var(--suave);
+}
+
+.alternar button.link {
+  display: inline;
+  padding: 0;
+  font-size: inherit;
+}
+
+.aviso-topo {
+  max-width: 400px;
+  margin: 24px auto 0;
+}
+
+.topo-logado {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.topo-logado button {
+  flex-shrink: 0;
+}
