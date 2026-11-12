@@ -9,6 +9,7 @@ from sqlalchemy.orm import Session, selectinload
 from ..database import get_db
 from ..dependencias import get_usuario_atual
 from ..models import Categoria, Gasto, Usuario
+from .categorias import buscar_categoria_visivel
 from ..schemas import (
     GastoCreate,
     GastoOut,
@@ -29,8 +30,8 @@ def _buscar_ou_404(db: Session, gasto_id: int, usuario: Usuario) -> Gasto:
     return gasto
 
 
-def _validar_categoria(db: Session, categoria_id: int):
-    if db.get(Categoria, categoria_id) is None:
+def _validar_categoria(db: Session, categoria_id: int, usuario: Usuario):
+    if buscar_categoria_visivel(db, categoria_id, usuario) is None:
         raise HTTPException(
             status.HTTP_422_UNPROCESSABLE_ENTITY, "A categoria informada não existe"
         )
@@ -105,79 +106,3 @@ def resumo_mensal(
     somas = {}
     for ano_linha, mes_linha, categoria_id, total in linhas:
         chave = (int(ano_linha), int(mes_linha))
-        somas.setdefault(chave, {})[categoria_id] = Decimal(str(total))
-
-    categorias = {categoria.id: categoria for categoria in db.scalars(select(Categoria))}
-
-    # 4. Monta a resposta, incluindo os meses sem gastos (com total zero)
-    resultado = []
-    for ano_mes in lista_meses:
-        por_categoria = somas.get(ano_mes, {})
-        mais_gastas_primeiro = sorted(
-            por_categoria.items(), key=lambda item: item[1], reverse=True
-        )
-        resultado.append(
-            MesResumo(
-                mes=f"{ano_mes[0]:04d}-{ano_mes[1]:02d}",
-                total=sum(por_categoria.values(), Decimal(0)),
-                categorias=[
-                    TotalPorCategoria(categoria=categorias[categoria_id], total=total)
-                    for categoria_id, total in mais_gastas_primeiro
-                ],
-            )
-        )
-
-    return ResumoMensalOut(meses=resultado)
-
-
-@router.get("/{gasto_id}", response_model=GastoOut)
-def obter_gasto(
-    gasto_id: int,
-    db: Session = Depends(get_db),
-    usuario: Usuario = Depends(get_usuario_atual),
-):
-    return _buscar_ou_404(db, gasto_id, usuario)
-
-
-@router.post("", response_model=GastoOut, status_code=status.HTTP_201_CREATED)
-def criar_gasto(
-    dados: GastoCreate,
-    db: Session = Depends(get_db),
-    usuario: Usuario = Depends(get_usuario_atual),
-):
-    _validar_categoria(db, dados.categoria_id)
-    gasto = Gasto(**dados.model_dump(), usuario_id=usuario.id)
-    gasto.descricao = gasto.descricao.strip()
-    db.add(gasto)
-    db.commit()
-    db.refresh(gasto, ["categoria"])
-    return gasto
-
-
-@router.put("/{gasto_id}", response_model=GastoOut)
-def atualizar_gasto(
-    gasto_id: int,
-    dados: GastoCreate,
-    db: Session = Depends(get_db),
-    usuario: Usuario = Depends(get_usuario_atual),
-):
-    gasto = _buscar_ou_404(db, gasto_id, usuario)
-    _validar_categoria(db, dados.categoria_id)
-    for campo, valor in dados.model_dump().items():
-        setattr(gasto, campo, valor)
-    gasto.descricao = gasto.descricao.strip()
-    db.commit()
-    db.refresh(gasto, ["categoria"])
-    return gasto
-
-
-@router.delete("/{gasto_id}", status_code=status.HTTP_204_NO_CONTENT)
-def excluir_gasto(
-    gasto_id: int,
-    db: Session = Depends(get_db),
-    usuario: Usuario = Depends(get_usuario_atual),
-):
-    gasto = _buscar_ou_404(db, gasto_id, usuario)
-    db.delete(gasto)
-    db.commit()
-    return Response(status_code=status.HTTP_204_NO_CONTENT)

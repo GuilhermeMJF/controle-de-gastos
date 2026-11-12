@@ -45,8 +45,11 @@ class Categoria(Base):
     __tablename__ = "categorias"
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    nome: Mapped[str] = mapped_column(String(50), unique=True)
+    nome: Mapped[str] = mapped_column(String(50))
     cor: Mapped[str] = mapped_column(String(7), default="#6b7280")
+    usuario_id: Mapped[int | None] = mapped_column(
+        ForeignKey("usuarios.id", ondelete="CASCADE"), nullable=True
+    )
 
     gastos: Mapped[list["Gasto"]] = relationship(back_populates="categoria")
 

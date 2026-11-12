@@ -9,6 +9,7 @@ from sqlalchemy.orm import Session, selectinload
 from ..database import get_db
 from ..dependencias import get_usuario_atual
 from ..models import Categoria, Gasto, Limite, Usuario
+from .categorias import buscar_categoria_visivel
 from ..schemas import (
     LimiteIn,
     LimiteOut,
@@ -50,8 +51,8 @@ def _remover(db: Session, usuario: Usuario, categoria_id: int | None):
     db.commit()
 
 
-def _validar_categoria(db: Session, categoria_id: int):
-    if db.get(Categoria, categoria_id) is None:
+def _validar_categoria(db: Session, categoria_id: int, usuario: Usuario):
+    if buscar_categoria_visivel(db, categoria_id, usuario) is None:
         raise HTTPException(status.HTTP_404_NOT_FOUND, "Categoria não encontrada")
 
 
@@ -111,7 +112,7 @@ def definir_limite_da_categoria(
     db: Session = Depends(get_db),
     usuario: Usuario = Depends(get_usuario_atual),
 ):
-    _validar_categoria(db, categoria_id)
+    _validar_categoria(db, categoria_id, usuario)
     return _definir(db, usuario, categoria_id, dados.valor)
 
 

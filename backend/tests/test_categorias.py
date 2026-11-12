@@ -22,12 +22,19 @@ def test_cor_invalida(client):
     assert resposta.status_code == 422
 
 
-def test_atualizar_categoria(client, categoria_id):
+def test_atualizar_categoria(client):
+    nova = client.post("/categorias", json={"nome": "Educação"}).json()
     resposta = client.put(
-        f"/categorias/{categoria_id}", json={"nome": "Comida", "cor": "#111111"}
+        f"/categorias/{nova['id']}", json={"nome": "Cursos", "cor": "#111111"}
     )
     assert resposta.status_code == 200
-    assert resposta.json()["nome"] == "Comida"
+    assert resposta.json()["nome"] == "Cursos"
+
+
+def test_categorias_padrao_nao_podem_ser_alteradas(client, categoria_id):
+    resposta = client.put(f"/categorias/{categoria_id}", json={"nome": "Comida"})
+    assert resposta.status_code == 403
+    assert client.delete(f"/categorias/{categoria_id}").status_code == 403
 
 
 def test_excluir_categoria_sem_gastos(client):
@@ -36,7 +43,8 @@ def test_excluir_categoria_sem_gastos(client):
     assert client.delete(f"/categorias/{nova['id']}").status_code == 404
 
 
-def test_nao_exclui_categoria_com_gastos(client, categoria_id, novo_gasto):
-    novo_gasto()
-    resposta = client.delete(f"/categorias/{categoria_id}")
+def test_nao_exclui_categoria_com_gastos(client, novo_gasto):
+    nova = client.post("/categorias", json={"nome": "Viagem"}).json()
+    novo_gasto(categoria_id=nova["id"])
+    resposta = client.delete(f"/categorias/{nova['id']}")
     assert resposta.status_code == 409

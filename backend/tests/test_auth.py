@@ -101,7 +101,21 @@ def test_cada_usuario_ve_so_os_proprios_gastos(client, cadastrar, novo_gasto):
     assert client.get(url).status_code == 200
 
 
-def test_categorias_sao_compartilhadas(client, cadastrar):
-    client.post("/categorias", json={"nome": "Educação"})
+def test_cada_usuario_tem_suas_categorias(client, cadastrar):
+    educacao = client.post("/categorias", json={"nome": "Educação"}).json()
     bia = TestClient(app, headers=cadastrar(email="bia@exemplo.com", nome="Bia"))
-    assert "Educação" in [c["nome"] for c in bia.get("/categorias").json()]
+
+    nomes_da_bia = [c["nome"] for c in bia.get("/categorias").json()]
+    assert "Educação" not in nomes_da_bia  # a categoria da Ana não aparece para a Bia
+    assert "Alimentação" in nomes_da_bia  # mas as padrão aparecem para todos
+
+    # A Bia pode criar uma categoria com o mesmo nome
+    assert bia.post("/categorias", json={"nome": "Educação"}).status_code == 201
+
+    # E não consegue alterar, apagar nem usar a categoria da Ana
+    url = f"/categorias/{educacao['id']}"
+    assert bia.put(url, json={"nome": "Outro nome"}).status_code == 404
+    assert bia.delete(url).status_code == 404
+    gasto = {"descricao": "X", "valor": 10, "data": "2026-11-10", "categoria_id": educacao["id"]}
+    assert bia.post("/gastos", json=gasto).status_code == 422
+    assert bia.put(f"/limites/categorias/{educacao['id']}", json={"valor": 100}).status_code == 404
