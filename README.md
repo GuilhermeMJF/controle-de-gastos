@@ -177,7 +177,6 @@ Exemplo de gasto:
 - [x] Resumo mensal com gráfico de evolução
 - [x] Limite de gastos mensal, no total e por categoria
 - [x] Login de usuários (cada pessoa vê só os próprios gastos)
-- [ ] Migrações de banco com Alembic
 - [x] Deploy online (Neon para o banco, Render para a API e Vercel para o front)
 - [x] Recuperação de senha por e-mail
 
