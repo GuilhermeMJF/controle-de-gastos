@@ -47,9 +47,9 @@ body {
 }
 
 .pagina {
-  max-width: 1080px;
+  max-width: 1440px;
   margin: 0 auto;
-  padding: 24px 16px 48px;
+  padding: 32px 32px 48px;
 }
 
 .topo h1 {
@@ -64,14 +64,18 @@ body {
 
 .grade {
   display: grid;
-  grid-template-columns: 340px 1fr;
-  gap: 20px;
+  grid-template-columns: 380px 1fr;
+  gap: 24px;
   align-items: start;
 }
 
 @media (max-width: 800px) {
   .grade {
     grid-template-columns: 1fr;
+  }
+
+  .pagina {
+    padding: 24px 16px 48px;
   }
 }
 
@@ -571,4 +575,12 @@ button.icone:hover {
   font-size: 0.8rem;
   color: var(--suave);
   text-align: center;
+}
+
+/* O formulário acompanha a rolagem em telas grandes */
+@media (min-width: 801px) {
+  aside.coluna {
+    position: sticky;
+    top: 24px;
+  }
 }
