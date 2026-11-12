@@ -80,6 +80,9 @@ export const api = {
     request(`/gastos/${id}`, { method: "PUT", body: JSON.stringify(dados) }),
   excluirGasto: (id) => request(`/gastos/${id}`, { method: "DELETE" }),
 
+    resumoMensal: (ate, meses = 6) =>
+    request(`/gastos/resumo-mensal?ate=${encodeURIComponent(ate)}&meses=${meses}`),
+
   listarLimites: () => request("/limites"),
   resumoDosLimites: (mes) => request(`/limites/resumo?mes=${encodeURIComponent(mes)}`),
   // categoriaId vazio (null) = limite total do mês

@@ -135,3 +135,18 @@ class ResumoLimitesOut(BaseModel):
     mes: str
     total: SituacaoLimite | None
     categorias: list[SituacaoLimiteCategoria]
+
+
+class TotalPorCategoria(BaseModel):
+    categoria: CategoriaOut
+    total: ValorEmReais
+
+
+class MesResumo(BaseModel):
+    mes: str
+    total: ValorEmReais
+    categorias: list[TotalPorCategoria]
+
+
+class ResumoMensalOut(BaseModel):
+    meses: list[MesResumo]

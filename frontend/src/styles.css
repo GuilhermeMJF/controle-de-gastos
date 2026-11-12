@@ -517,3 +517,58 @@ button.icone:hover {
 .campo-limite input {
   max-width: 150px;
 }
+
+/* Gráfico dos últimos meses */
+.legenda-limite {
+  color: var(--erro);
+  font-size: 0.8rem;
+  white-space: nowrap;
+}
+
+.dica-grafico {
+  background: var(--cartao);
+  border: 1px solid var(--borda);
+  border-radius: 8px;
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 0.85rem;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+}
+
+.dica-grafico strong::first-letter {
+  text-transform: uppercase;
+}
+
+.dica-total {
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+
+.dica-grafico ul {
+  list-style: none;
+  padding: 0;
+  margin: 4px 0 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.dica-grafico li {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--suave);
+}
+
+.dica-grafico small {
+  color: var(--suave);
+}
+
+.dica-rodape {
+  margin: 8px 0 0;
+  font-size: 0.8rem;
+  color: var(--suave);
+  text-align: center;
+}

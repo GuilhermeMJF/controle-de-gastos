@@ -3,6 +3,7 @@ import { api } from "../api.js";
 import { intervaloDoMes, mesAtual } from "../utils.js";
 import EditorLimites from "./EditorLimites.jsx";
 import GastoForm from "./GastoForm.jsx";
+import GraficoMensal from "./GraficoMensal.jsx";
 import LimitesMes from "./LimitesMes.jsx";
 import ListaGastos from "./ListaGastos.jsx";
 import NovaCategoria from "./NovaCategoria.jsx";
@@ -19,6 +20,7 @@ export default function Painel({ usuario, onSair }) {
   const [limites, setLimites] = useState([]);
   const [resumoLimites, setResumoLimites] = useState(null);
   const [editandoLimites, setEditandoLimites] = useState(false);
+  const [resumoMensal, setResumoMensal] = useState(null);
 
   const carregarGastos = useCallback(async () => {
     setCarregando(true);
@@ -52,9 +54,22 @@ export default function Painel({ usuario, onSair }) {
     }
   }, [mes]);
 
+  // Totais dos últimos 6 meses para o gráfico (sempre até o mês atual)
+  const carregarResumoMensal = useCallback(async () => {
+    try {
+      setResumoMensal(await api.resumoMensal(mesAtual(), 6));
+    } catch (e) {
+      setErro(e.message);
+    }
+  }, []);
+
   useEffect(() => {
     api.listarCategorias().then(setCategorias).catch((e) => setErro(e.message));
   }, []);
+
+  useEffect(() => {
+    carregarResumoMensal();
+  }, [carregarResumoMensal]);
 
   useEffect(() => {
     carregarLimites();
@@ -71,7 +86,7 @@ export default function Painel({ usuario, onSair }) {
     } else {
       await api.criarGasto(dados);
     }
-    await Promise.all([carregarGastos(), carregarLimites()]);
+    await Promise.all([carregarGastos(), carregarLimites(), carregarResumoMensal()]);
   }
 
   async function excluirGasto(gasto) {
@@ -79,7 +94,7 @@ export default function Painel({ usuario, onSair }) {
     try {
       await api.excluirGasto(gasto.id);
       if (gastoEmEdicao?.id === gasto.id) setGastoEmEdicao(null);
-      await Promise.all([carregarGastos(), carregarLimites()]);
+      await Promise.all([carregarGastos(), carregarLimites(), carregarResumoMensal()]);
     } catch (e) {
       setErro(e.message);
     }
@@ -184,6 +199,13 @@ export default function Painel({ usuario, onSair }) {
               onExcluir={excluirGasto}
             />
           </div>
+
+          <GraficoMensal
+            resumo={resumoMensal}
+            mesSelecionado={mes}
+            limiteTotal={limites.find((limite) => limite.categoria_id == null)?.valor ?? null}
+            onSelecionarMes={setMes}
+          />
         </section>
       </main>
     </div>

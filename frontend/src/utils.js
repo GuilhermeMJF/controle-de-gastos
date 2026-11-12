@@ -42,3 +42,19 @@ export function nomeDoMes(mes) {
     year: "numeric",
   });
 }
+
+// "2026-11" -> "nov/26" (para o eixo do gráfico)
+export function nomeCurtoDoMes(mes) {
+  const [ano, numeroMes] = mes.split("-").map(Number);
+  const nome = new Date(ano, numeroMes - 1, 1)
+    .toLocaleDateString("pt-BR", { month: "short" })
+    .replace(".", "");
+  return `${nome}/${String(ano).slice(2)}`;
+}
+
+const formatadorCompacto = new Intl.NumberFormat("pt-BR", { notation: "compact" });
+
+// 1500 -> "R$ 1,5 mil" (para o eixo do gráfico, que tem pouco espaço)
+export function formatarMoedaCurta(valor) {
+  return `R$ ${formatadorCompacto.format(valor)}`;
+}

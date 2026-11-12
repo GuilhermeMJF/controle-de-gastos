@@ -9,6 +9,7 @@ Aplicação web para registrar gastos pessoais e organizá-los por categoria. Vo
 - Cadastro e login com e-mail e senha: cada pessoa vê só os próprios gastos
 - Recuperação de senha por e-mail, com link que vale por 30 minutos
 - Limite de gastos mensal, no total e por categoria, com barra que fica amarela a partir de 80% e vermelha ao estourar
+- Gráfico dos últimos 6 meses, com a linha do limite total e clique para navegar entre os meses
 - Cadastrar, editar e excluir gastos (descrição, valor, data e categoria)
 - Filtrar gastos por mês e por categoria
 - Total do período e participação de cada categoria no total
@@ -37,7 +38,7 @@ Os e-mails são enviados pela API HTTP do [Brevo](https://www.brevo.com), porque
 | --- | --- |
 | Back-end | Python 3.12, FastAPI, SQLAlchemy 2, Pydantic 2 |
 | Banco de dados | PostgreSQL 16 |
-| Front-end | React 18 + Vite |
+| Front-end | React 18 + Vite + Recharts |
 | Testes | Pytest |
 | Ambiente | Docker e Docker Compose |
 
@@ -55,14 +56,14 @@ controle-de-gastos/
 │   │   ├── seguranca.py     # hash de senha e tokens JWT
 │   │   ├── dependencias.py  # descobre qual usuário está logado
 │   │   ├── envio_email.py   # envio de e-mails pelo Brevo
-│   │   └── routers/         # rotas de login, categorias e gastos
+│   │   └── routers/         # rotas de login, categorias, gastos e limites
 │   └── tests/               # testes automatizados da API
 ├── frontend/
 │   └── src/
 │       ├── App.jsx          # decide entre a tela de login e o painel
 │       ├── api.js           # chamadas à API (envia o token)
 │       ├── sessao.js        # guarda o login no navegador
-│       └── components/      # login, nova senha, painel, formulário, lista, resumo e limites
+│       └── components/      # login, nova senha, painel, formulário, lista, resumo, limites e gráfico
 └── docker-compose.yml
 ```
 
@@ -152,6 +153,7 @@ Com exceção do cadastro, do login e da recuperação de senha, todas as rotas 
 | POST | `/gastos` | Cria um gasto |
 | PUT | `/gastos/{id}` | Atualiza um gasto |
 | DELETE | `/gastos/{id}` | Exclui um gasto |
+| GET | `/gastos/resumo-mensal?ate=AAAA-MM&meses=6` | Totais de cada mês, por categoria, para o gráfico |
 | GET | `/limites` | Lista os limites do usuário |
 | PUT | `/limites/total` | Define (ou altera) o limite total do mês |
 | DELETE | `/limites/total` | Remove o limite total |
@@ -172,7 +174,7 @@ Exemplo de gasto:
 
 ## 🗺️ Próximos passos
 
-- [ ] Resumo mensal com gráfico de evolução
+- [x] Resumo mensal com gráfico de evolução
 - [x] Limite de gastos mensal, no total e por categoria
 - [x] Login de usuários (cada pessoa vê só os próprios gastos)
 - [ ] Migrações de banco com Alembic

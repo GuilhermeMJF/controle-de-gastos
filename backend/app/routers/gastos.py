@@ -1,13 +1,21 @@
+import calendar
 from datetime import date
+from decimal import Decimal
 
 from fastapi import APIRouter, Depends, HTTPException, Query, Response, status
-from sqlalchemy import select
+from sqlalchemy import extract, func, select
 from sqlalchemy.orm import Session, selectinload
 
 from ..database import get_db
 from ..dependencias import get_usuario_atual
 from ..models import Categoria, Gasto, Usuario
-from ..schemas import GastoCreate, GastoOut
+from ..schemas import (
+    GastoCreate,
+    GastoOut,
+    MesResumo,
+    ResumoMensalOut,
+    TotalPorCategoria,
+)
 
 router = APIRouter(prefix="/gastos", tags=["Gastos"])
 
@@ -55,6 +63,71 @@ def listar_gastos(
 
     consulta = consulta.order_by(Gasto.data.desc(), Gasto.id.desc())
     return db.scalars(consulta).all()
+
+
+@router.get("/resumo-mensal", response_model=ResumoMensalOut)
+def resumo_mensal(
+    ate: str = Query(
+        ..., pattern=r"^\d{4}-(0[1-9]|1[0-2])$", description="Último mês, AAAA-MM"
+    ),
+    meses: int = Query(6, ge=1, le=24, description="Quantos meses mostrar"),
+    db: Session = Depends(get_db),
+    usuario: Usuario = Depends(get_usuario_atual),
+):
+    # 1. Monta a lista de meses, do mais antigo para o mais recente
+    ano, mes = (int(parte) for parte in ate.split("-"))
+    lista_meses = []
+    for _ in range(meses):
+        lista_meses.append((ano, mes))
+        mes -= 1
+        if mes == 0:  # passou de janeiro: volta para dezembro do ano anterior
+            mes = 12
+            ano -= 1
+    lista_meses.reverse()
+
+    primeiro_dia = date(*lista_meses[0], 1)
+    ultimo_dia = date(*lista_meses[-1], calendar.monthrange(*lista_meses[-1])[1])
+
+    # 2. O banco soma os gastos, agrupando por ano, mês e categoria
+    ano_do_gasto = extract("year", Gasto.data)
+    mes_do_gasto = extract("month", Gasto.data)
+    linhas = db.execute(
+        select(ano_do_gasto, mes_do_gasto, Gasto.categoria_id, func.sum(Gasto.valor))
+        .where(
+            Gasto.usuario_id == usuario.id,
+            Gasto.data >= primeiro_dia,
+            Gasto.data <= ultimo_dia,
+        )
+        .group_by(ano_do_gasto, mes_do_gasto, Gasto.categoria_id)
+    ).all()
+
+    # 3. Organiza o resultado: {(ano, mês): {id da categoria: total}}
+    somas = {}
+    for ano_linha, mes_linha, categoria_id, total in linhas:
+        chave = (int(ano_linha), int(mes_linha))
+        somas.setdefault(chave, {})[categoria_id] = Decimal(str(total))
+
+    categorias = {categoria.id: categoria for categoria in db.scalars(select(Categoria))}
+
+    # 4. Monta a resposta, incluindo os meses sem gastos (com total zero)
+    resultado = []
+    for ano_mes in lista_meses:
+        por_categoria = somas.get(ano_mes, {})
+        mais_gastas_primeiro = sorted(
+            por_categoria.items(), key=lambda item: item[1], reverse=True
+        )
+        resultado.append(
+            MesResumo(
+                mes=f"{ano_mes[0]:04d}-{ano_mes[1]:02d}",
+                total=sum(por_categoria.values(), Decimal(0)),
+                categorias=[
+                    TotalPorCategoria(categoria=categorias[categoria_id], total=total)
+                    for categoria_id, total in mais_gastas_primeiro
+                ],
+            )
+        )
+
+    return ResumoMensalOut(meses=resultado)
 
 
 @router.get("/{gasto_id}", response_model=GastoOut)
