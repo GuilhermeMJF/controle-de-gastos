@@ -10,6 +10,7 @@ from fastapi.testclient import TestClient  # noqa: E402
 
 from app.database import Base, engine  # noqa: E402
 from app.main import app  # noqa: E402
+from app.routers.auth import LIMITADORES  # noqa: E402
 
 SENHA_PADRAO = "senha-segura-123"
 
@@ -18,6 +19,9 @@ SENHA_PADRAO = "senha-segura-123"
 def anonimo():
     """Cliente sem login, com o banco limpo (o lifespan recria tabelas e categorias)."""
     Base.metadata.drop_all(engine)
+    # As tentativas de login ficam na memória: zera para um teste não atrapalhar o outro
+    for limitador in LIMITADORES:
+        limitador.zerar()
     with TestClient(app) as cliente:
         yield cliente
 

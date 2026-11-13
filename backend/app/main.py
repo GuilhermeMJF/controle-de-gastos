@@ -3,7 +3,7 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from sqlalchemy import inspect, select, text
+from sqlalchemy import inspect, make_url, select, text
 
 from .config import CORS_ORIGINS, DATABASE_URL, JWT_SECRET, JWT_SECRET_PADRAO
 from .database import Base, SessionLocal, engine
@@ -128,13 +128,28 @@ def preparar_banco():
             db.commit()
 
 
+def _banco_local() -> bool:
+    """True quando o banco é o do seu computador (Docker ou testes), e não o de produção."""
+    if DATABASE_URL.startswith("sqlite"):
+        return True
+    return make_url(DATABASE_URL).host in ("localhost", "127.0.0.1", "db")
+
+
+def _conferir_chave_do_token():
+    if JWT_SECRET != JWT_SECRET_PADRAO:
+        return
+    if _banco_local():
+        logger.warning("JWT_SECRET não foi definido: usando a chave de desenvolvimento.")
+        return
+    raise RuntimeError(
+        "JWT_SECRET não foi definido. Defina essa variável com um valor longo e "
+        "aleatório antes de publicar a API."
+    )
+
+
 @asynccontextmanager
 async def lifespan(_app: FastAPI):
-    if JWT_SECRET == JWT_SECRET_PADRAO and not DATABASE_URL.startswith("sqlite"):
-        logger.warning(
-            "JWT_SECRET não foi definido: usando a chave padrão. "
-            "Defina uma chave própria antes de publicar."
-        )
+    _conferir_chave_do_token()
     preparar_banco()
     yield
 

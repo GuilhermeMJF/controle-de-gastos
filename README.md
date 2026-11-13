@@ -20,8 +20,10 @@ Aplicação web para registrar gastos pessoais e organizá-los por categoria. Vo
 
 - As senhas nunca são guardadas: o banco armazena só um hash **scrypt** com sal aleatório.
 - Ao entrar, a API devolve um **token JWT** válido por 7 dias. O front-end envia esse token no cabeçalho `Authorization: Bearer ...` de cada pedido.
-- Todas as rotas de gastos e categorias exigem login. Os gastos são separados por usuário; as categorias são compartilhadas entre todos.
+- Todas as rotas de gastos e categorias exigem login. Cada pessoa vê só os próprios gastos, limites e categorias; as 6 categorias padrão aparecem para todos, mas ninguém pode alterá-las.
 - Login com e-mail inexistente e com senha errada dão a mesma resposta, para não revelar quais e-mails estão cadastrados.
+- Proteção contra força bruta: depois de 5 senhas erradas, o login da conta fica bloqueado por 15 minutos. Também há limites por IP para login, cadastro e pedidos de nova senha (a API responde 429).
+- Em produção, a API se recusa a ligar sem a variável `JWT_SECRET`, para nunca usar a chave de desenvolvimento, que é pública.
 
 ### Esqueci minha senha
 
@@ -56,6 +58,7 @@ controle-de-gastos/
 │   │   ├── seguranca.py     # hash de senha e tokens JWT
 │   │   ├── dependencias.py  # descobre qual usuário está logado
 │   │   ├── envio_email.py   # envio de e-mails pelo Brevo
+│   │   ├── limitador.py     # limite de tentativas (contra força bruta)
 │   │   └── routers/         # rotas de login, categorias, gastos e limites
 │   └── tests/               # testes automatizados da API
 ├── frontend/
@@ -144,10 +147,10 @@ Com exceção do cadastro, do login e da recuperação de senha, todas as rotas 
 | GET | `/auth/me` | Mostra o usuário logado |
 | POST | `/auth/esqueci-senha` | Envia o link de redefinição de senha por e-mail |
 | POST | `/auth/redefinir-senha` | Cria a nova senha a partir do token do link |
-| GET | `/categorias` | Lista as categorias |
-| POST | `/categorias` | Cria uma categoria |
-| PUT | `/categorias/{id}` | Atualiza uma categoria |
-| DELETE | `/categorias/{id}` | Exclui uma categoria sem gastos |
+| GET | `/categorias` | Lista as categorias padrão e as criadas pelo usuário |
+| POST | `/categorias` | Cria uma categoria só para o usuário |
+| PUT | `/categorias/{id}` | Atualiza uma categoria do usuário (as padrão não podem ser alteradas) |
+| DELETE | `/categorias/{id}` | Exclui uma categoria do usuário que não tenha gastos |
 | GET | `/gastos` | Lista os gastos do usuário logado (filtros: `categoria_id`, `inicio`, `fim`) |
 | GET | `/gastos/{id}` | Detalha um gasto |
 | POST | `/gastos` | Cria um gasto |

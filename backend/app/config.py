@@ -17,10 +17,8 @@ DATABASE_URL = _normalizar_url_do_banco(
     )
 )
 
-# Chave usada para assinar os tokens de login (JWT).
-# Em produção, defina JWT_SECRET com um valor longo e aleatório.
 JWT_SECRET_PADRAO = "chave-de-desenvolvimento-troque-antes-de-publicar"
-JWT_SECRET = os.getenv("JWT_SECRET", JWT_SECRET_PADRAO)
+JWT_SECRET = os.getenv("JWT_SECRET") or JWT_SECRET_PADRAO 
 JWT_EXPIRA_MINUTOS = int(os.getenv("JWT_EXPIRA_MINUTOS", str(60 * 24 * 7)))  # 7 dias
 
 # Endereços do front-end que podem chamar a API (separados por vírgula)
