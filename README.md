@@ -1,10 +1,10 @@
-# 💰 Controle de Gastos
+# Controle de Gastos
 
-🔗 **Acesse o site:** https://controle-de-gastos-psi-six.vercel.app
+Site: https://controle-de-gastos-psi-six.vercel.app
 
 Aplicação web para registrar gastos pessoais e organizá-los por categoria. Você cadastra o que gastou, filtra por mês e categoria e vê, na hora, quanto saiu no período e para onde foi o dinheiro.
 
-## ✨ Funcionalidades
+## Funcionalidades
 
 - Cadastro e login com e-mail e senha: cada pessoa vê só os próprios gastos
 - Recuperação de senha por e-mail, com link que vale por 30 minutos
@@ -16,10 +16,10 @@ Aplicação web para registrar gastos pessoais e organizá-los por categoria. Vo
 - Categorias padrão já criadas (Alimentação, Transporte, Moradia, Lazer, Saúde, Outros) e opção de criar novas com cor própria
 - Validações na API: valor positivo com no máximo 2 casas decimais, categoria existente, nomes de categoria sem repetição e proteção contra excluir categoria em uso
 
-## 🔐 Como funciona o login
+## Como funciona o login
 
-- As senhas nunca são guardadas: o banco armazena só um hash **scrypt** com sal aleatório.
-- Ao entrar, a API devolve um **token JWT** válido por 7 dias. O front-end envia esse token no cabeçalho `Authorization: Bearer ...` de cada pedido.
+- As senhas nunca são guardadas: o banco armazena só um hash scrypt com sal aleatório.
+- Ao entrar, a API devolve um token JWT válido por 7 dias. O front-end envia esse token no cabeçalho `Authorization: Bearer ...` de cada pedido.
 - Todas as rotas de gastos e categorias exigem login. Cada pessoa vê só os próprios gastos, limites e categorias; as 6 categorias padrão aparecem para todos, mas ninguém pode alterá-las.
 - Login com e-mail inexistente e com senha errada dão a mesma resposta, para não revelar quais e-mails estão cadastrados.
 - Proteção contra força bruta: depois de 5 senhas erradas, o login da conta fica bloqueado por 15 minutos. Também há limites por IP para login, cadastro e pedidos de nova senha (a API responde 429).
@@ -32,19 +32,17 @@ Aplicação web para registrar gastos pessoais e organizá-los por categoria. Vo
 3. Ao criar a nova senha, todos os logins abertos (em qualquer aparelho) são encerrados.
 4. A resposta é sempre a mesma, exista o e-mail ou não, e um novo e-mail só sai depois de 2 minutos, para evitar spam.
 
-Os e-mails são enviados pela API HTTP do [Brevo](https://www.brevo.com), porque o plano gratuito do Render bloqueia as portas SMTP. **Sem o Brevo configurado, o e-mail não é enviado: o conteúdo, com o link, aparece no terminal da API**, o que facilita testar no computador.
+Os e-mails são enviados pela API HTTP do [Brevo](https://www.brevo.com), porque o plano gratuito do Render bloqueia as portas SMTP. Sem o Brevo configurado, o e-mail não sai. O conteúdo, com o link, aparece no terminal da API, e isso facilita testar no computador.
 
-## 🛠️ Tecnologias
+## Tecnologias
 
-| Camada | Tecnologia |
-| --- | --- |
-| Back-end | Python 3.12, FastAPI, SQLAlchemy 2, Pydantic 2 |
-| Banco de dados | PostgreSQL 16 |
-| Front-end | React 18 + Vite + Recharts |
-| Testes | Pytest |
-| Ambiente | Docker e Docker Compose |
+- Back-end: Python 3.12, FastAPI, SQLAlchemy 2 e Pydantic 2
+- Banco de dados: PostgreSQL 16
+- Front-end: React 18, Vite, Recharts e ícones Lucide
+- Testes: Pytest
+- Ambiente: Docker e Docker Compose
 
-## 📁 Estrutura
+## Estrutura
 
 ```
 controle-de-gastos/
@@ -70,7 +68,7 @@ controle-de-gastos/
 └── docker-compose.yml
 ```
 
-## 🚀 Como rodar localmente
+## Como rodar localmente
 
 ### Opção 1: com Docker
 
@@ -88,7 +86,7 @@ docker compose up --build
 
 Precisa de Python 3.12+, Node 20+ e um PostgreSQL rodando.
 
-**1. Banco de dados**
+#### 1. Banco de dados
 
 Crie um banco e um usuário (os valores padrão são `gastos` / `gastos` / `gastos`):
 
@@ -97,7 +95,7 @@ CREATE USER gastos WITH PASSWORD 'gastos';
 CREATE DATABASE gastos OWNER gastos;
 ```
 
-**2. Back-end**
+#### 2. Back-end
 
 ```bash
 cd backend
@@ -112,13 +110,15 @@ Variáveis de ambiente da API:
 | Variável | Para que serve |
 | --- | --- |
 | `DATABASE_URL` | Endereço do banco, ex.: `postgresql+psycopg://usuario:senha@localhost:5432/meubanco` |
-| `JWT_SECRET` | Chave que assina os tokens de login. **Obrigatório em produção**, com um valor longo e aleatório |
+| `JWT_SECRET` | Chave que assina os tokens de login. Obrigatória em produção, com um valor longo e aleatório |
 | `CORS_ORIGINS` | Endereços do front-end que podem chamar a API, separados por vírgula |
 | `FRONTEND_URL` | Endereço do site usado no link do e-mail. Se não for definido, usa o primeiro de `CORS_ORIGINS` |
-| `BREVO_API_KEY` | Chave da API do Brevo, para enviar e-mails|
-| `EMAIL_REMETENTE` | E-mail verificado no Brevo que aparece como remetente|
+| `BREVO_API_KEY` | Chave da API do Brevo, para enviar e-mails |
+| `EMAIL_REMETENTE` | E-mail verificado no Brevo que aparece como remetente |
 
-**3. Front-end** (em outro terminal)
+#### 3. Front-end
+
+Em outro terminal:
 
 ```bash
 cd frontend
@@ -126,7 +126,7 @@ npm install
 npm run dev
 ```
 
-## 🧪 Testes
+## Testes
 
 Os testes usam SQLite em memória, então não precisam do PostgreSQL:
 
@@ -136,9 +136,9 @@ pip install -r requirements-dev.txt
 pytest
 ```
 
-## 🔌 Rotas da API
+## Rotas da API
 
-Com exceção do cadastro, do login e da recuperação de senha, todas as rotas exigem o cabeçalho `Authorization: Bearer <token>`.
+Todas as rotas, menos cadastro, login e recuperação de senha, exigem o cabeçalho `Authorization: Bearer <token>`.
 
 | Método | Rota | Descrição |
 | --- | --- | --- |
@@ -175,7 +175,7 @@ Exemplo de gasto:
 }
 ```
 
-## 🗺️ Próximos passos
+## O que já foi feito
 
 - [x] Resumo mensal com gráfico de evolução
 - [x] Limite de gastos mensal, no total e por categoria
@@ -183,6 +183,6 @@ Exemplo de gasto:
 - [x] Deploy online (Neon para o banco, Render para a API e Vercel para o front)
 - [x] Recuperação de senha por e-mail
 
-## 👤 Autor
+## Autor
 
 Feito por [Luiz Guilherme](https://github.com/GuilhermeMJF).
