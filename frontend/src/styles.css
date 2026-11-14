@@ -1,28 +1,28 @@
 /*
-  Identidade: "anil" — a coluna de lançamento é um painel escuro anil-noite,
-  o resto da tela é claro e quieto. Números em Bricolage Grotesque, texto em
+  Identidade: "verde-garrafa" — a coluna de lançamento é um painel escuro,
+  o resto da tela é claro e quieto, com só dois cartões (lista e gráfico). Números em Bricolage Grotesque, texto em
   Atkinson Hyperlegible (feita para leitura fácil).
 */
 :root {
-  --fundo: #eceef2; /* névoa */
+  --fundo: #eef0ec;
   --cartao: #ffffff;
-  --texto: #18204a; /* anil-noite */
-  --suave: #5a6275;
-  --borda: #d9dce4;
-  --primaria: #3b4fe0; /* anil */
-  --primaria-escura: #2b3cc0;
-  --painel: #18204a;
-  --painel-texto: #eef0ff;
-  --painel-suave: #a9b0d6;
-  --painel-campo: #232c5e;
-  --painel-borda: #36407a;
+  --texto: #142520;
+  --suave: #56645d;
+  --borda: #d3d9d4;
+  --primaria: #1d6e4a; /* verde-garrafa */
+  --primaria-escura: #155638;
+  --painel: #142520;
+  --painel-texto: #eef3ef;
+  --painel-suave: #a7b8af;
+  --painel-campo: #1e3530;
+  --painel-borda: #34514a;
   --erro: #b4302f;
   --erro-fundo: #fbeaea;
   --sucesso: #1d6b45;
   --sucesso-fundo: #e6f4ec;
   --alerta: #c47f00;
   --alerta-texto: #8f5c00;
-  --raio: 14px;
+  --raio: 10px;
   --fonte-titulo: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
   --fonte-texto: "Atkinson Hyperlegible", system-ui, -apple-system, "Segoe UI", sans-serif;
   color-scheme: light;
@@ -30,18 +30,18 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --fundo: #0e1324;
-    --cartao: #161d35;
-    --texto: #e6e9f5;
-    --suave: #9aa2bd;
-    --borda: #273055;
-    --primaria: #8c9bff;
-    --primaria-escura: #a8b3ff;
-    --painel: #1e2860;
-    --painel-texto: #eef0ff;
-    --painel-suave: #b3badf;
-    --painel-campo: #141b44;
-    --painel-borda: #3a4590;
+    --fundo: #0d1512;
+    --cartao: #15201c;
+    --texto: #e4ece7;
+    --suave: #95a69d;
+    --borda: #26352f;
+    --primaria: #5cc28e;
+    --primaria-escura: #7fd3a6;
+    --painel: #1a2e27;
+    --painel-texto: #eef3ef;
+    --painel-suave: #a7b8af;
+    --painel-campo: #0f1c18;
+    --painel-borda: #2e4a40;
     --erro: #f2a19f;
     --erro-fundo: #3a1a22;
     --sucesso: #8fd8b0;
@@ -190,7 +190,7 @@ button {
   font-weight: 700;
   font-size: 0.95rem;
   border: none;
-  border-radius: 8px;
+  border-radius: 6px;
   padding: 11px 18px;
   cursor: pointer;
   background: var(--primaria);
@@ -200,7 +200,7 @@ button {
 
 @media (prefers-color-scheme: dark) {
   button {
-    color: #0e1324;
+    color: #0d1512;
   }
 }
 
@@ -237,11 +237,18 @@ button.link:hover:not(:disabled) {
 }
 
 button.icone {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   background: none;
-  padding: 6px 8px;
-  font-size: 0.85rem;
-  font-weight: 400;
+  padding: 8px;
   color: var(--suave);
+}
+
+.com-icone {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
 }
 
 button.icone:hover:not(:disabled) {
@@ -278,7 +285,7 @@ aside.coluna .cartao {
   background: var(--painel);
   border-color: var(--painel);
   color: var(--painel-texto);
-  border-radius: 20px;
+  border-radius: 12px;
 }
 
 aside.coluna label,
@@ -330,10 +337,30 @@ aside.coluna > button.link {
   padding: 4px 6px;
 }
 
+/* Filtros, total e limites ficam direto no fundo, sem cartão */
 .filtros {
   display: flex;
   gap: 12px;
-  padding: 16px 22px;
+}
+
+.filtros input,
+.filtros select {
+  background: var(--cartao);
+}
+
+.resumo {
+  padding: 8px 0 4px;
+}
+
+.limites {
+  padding-top: 20px;
+  border-top: 1px solid var(--borda);
+}
+
+.limites h2 {
+  margin: 0;
+  font-size: 1.2rem;
+  font-weight: 700;
 }
 
 /* Total do período: o número mais importante da tela */
@@ -377,14 +404,14 @@ aside.coluna > button.link {
 
 .barra-fundo {
   height: 8px;
-  background: var(--fundo);
-  border-radius: 999px;
+  background: var(--borda);
+  border-radius: 3px;
   overflow: hidden;
 }
 
 .barra {
   height: 100%;
-  border-radius: 999px;
+  border-radius: 3px;
 }
 
 .lista {
@@ -443,16 +470,6 @@ aside.coluna > button.link {
 }
 
 @media (max-width: 520px) {
-  .item {
-    flex-wrap: wrap;
-  }
-
-  .item-acoes {
-    width: 100%;
-    justify-content: flex-end;
-    margin-top: -4px;
-  }
-
   .filtros {
     flex-direction: column;
   }
@@ -480,7 +497,7 @@ aside.coluna > button.link {
 }
 
 .tela-login .cartao {
-  border-radius: 20px;
+  border-radius: 12px;
   padding: 26px;
 }
 

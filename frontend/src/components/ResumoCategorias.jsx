@@ -13,7 +13,7 @@ export default function ResumoCategorias({ gastos }) {
   ).sort((a, b) => b.total - a.total);
 
   return (
-    <section className="cartao resumo">
+    <section className="resumo">
       <p className="rotulo">Total no período</p>
       <p className="total">{formatarMoeda(total)}</p>
 

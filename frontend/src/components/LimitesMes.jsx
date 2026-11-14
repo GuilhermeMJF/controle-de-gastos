@@ -52,7 +52,7 @@ export default function LimitesMes({ mes, resumo, onEditar }) {
   const temLimites = resumo && (resumo.total || resumo.categorias.length > 0);
 
   return (
-    <section className="cartao limites">
+    <section className="limites">
       <div className="cartao-cabecalho">
         <h2>Limites de {nomeDoMes(mes)}</h2>
         <button type="button" className="link" onClick={onEditar}>

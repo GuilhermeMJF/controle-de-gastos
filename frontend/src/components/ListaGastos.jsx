@@ -1,3 +1,4 @@
+import { Pencil, Trash2 } from "lucide-react";
 import { formatarData, formatarMoeda } from "../utils.js";
 
 export default function ListaGastos({ gastos, carregando, onEditar, onExcluir }) {
@@ -27,16 +28,18 @@ export default function ListaGastos({ gastos, carregando, onEditar, onExcluir })
               className="icone"
               onClick={() => onEditar(gasto)}
               aria-label={`Editar ${gasto.descricao}`}
+              title="Editar"
             >
-              Editar
+              <Pencil size={16} aria-hidden="true" />
             </button>
             <button
               type="button"
               className="icone"
               onClick={() => onExcluir(gasto)}
               aria-label={`Excluir ${gasto.descricao}`}
+              title="Excluir"
             >
-              Excluir
+              <Trash2 size={16} aria-hidden="true" />
             </button>
           </div>
         </li>

@@ -1,3 +1,4 @@
+import { Plus } from "lucide-react";
 import { useState } from "react";
 
 export default function NovaCategoria({ onCriar }) {
@@ -20,8 +21,9 @@ export default function NovaCategoria({ onCriar }) {
 
   if (!aberto) {
     return (
-      <button type="button" className="link" onClick={() => setAberto(true)}>
-        + Nova categoria
+      <button type="button" className="link com-icone" onClick={() => setAberto(true)}>
+        <Plus size={16} aria-hidden="true" />
+        Nova categoria
       </button>
     );
   }

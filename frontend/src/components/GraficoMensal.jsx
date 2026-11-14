@@ -12,7 +12,7 @@ import {
 import { formatarMoeda, formatarMoedaCurta, nomeCurtoDoMes, nomeDoMes } from "../utils.js";
 
 // Cores fixas que funcionam tanto no tema claro quanto no escuro
-const COR_NORMAL = "#5b6cf0";
+const COR_NORMAL = "#2f9e6a";
 const COR_ESTOUROU = "#d9534f";
 const COR_TEXTO = "#8a91a3";
 

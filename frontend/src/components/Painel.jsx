@@ -1,3 +1,4 @@
+import { LogOut, X } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { api } from "../api.js";
 import { intervaloDoMes, mesAtual } from "../utils.js";
@@ -126,7 +127,8 @@ export default function Painel({ usuario, onSair }) {
           <h1>Controle de Gastos</h1>
           <p>Olá, {usuario.nome.split(" ")[0]}! Veja para onde o seu dinheiro está indo.</p>
         </div>
-        <button type="button" className="secundario" onClick={onSair}>
+        <button type="button" className="secundario com-icone" onClick={onSair}>
+          <LogOut size={16} aria-hidden="true" />
           Sair
         </button>
       </header>
@@ -134,8 +136,8 @@ export default function Painel({ usuario, onSair }) {
       {erro && (
         <div className="aviso" role="alert">
           {erro}
-          <button type="button" className="icone" onClick={() => setErro("")} title="Fechar">
-            ✕
+          <button type="button" className="icone" onClick={() => setErro("")} aria-label="Fechar aviso">
+            <X size={16} aria-hidden="true" />
           </button>
         </div>
       )}
@@ -153,7 +155,7 @@ export default function Painel({ usuario, onSair }) {
         </aside>
 
         <section className="coluna">
-          <div className="cartao filtros">
+          <div className="filtros">
             <label>
               Mês
               <input type="month" value={mes} onChange={(e) => setMes(e.target.value)} />
@@ -171,6 +173,8 @@ export default function Painel({ usuario, onSair }) {
             </label>
           </div>
 
+          <ResumoCategorias gastos={gastos} />
+
           {editandoLimites ? (
             <EditorLimites
               categorias={categorias}
@@ -187,8 +191,6 @@ export default function Painel({ usuario, onSair }) {
               />
             )
           )}
-
-          <ResumoCategorias gastos={gastos} />
 
           <div className="cartao">
             <h2>Gastos</h2>
