@@ -11,7 +11,7 @@ async function request(caminho, opcoes = {}) {
   try {
     resposta = await fetch(`${API_URL}${caminho}`, { ...opcoes, headers });
   } catch {
-    throw new Error("Não foi possível conectar à API. Ela está rodando?");
+    throw new Error("Não foi possível falar com o servidor. Se o site ficou um tempo sem uso, ele leva até um minuto para acordar: tente de novo em instantes.");
   }
 
   // Token vencido ou inválido: avisa o App para voltar à tela de login

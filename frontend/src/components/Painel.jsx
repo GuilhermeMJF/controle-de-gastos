@@ -1,7 +1,7 @@
 import { LogOut, X } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { api } from "../api.js";
-import { intervaloDoMes, mesAtual } from "../utils.js";
+import { intervaloDoMes, mesAtual, nomeDoMes } from "../utils.js";
 import EditorLimites from "./EditorLimites.jsx";
 import GastoForm from "./GastoForm.jsx";
 import GraficoMensal from "./GraficoMensal.jsx";
@@ -125,7 +125,10 @@ export default function Painel({ usuario, onSair }) {
       <header className="topo topo-logado">
         <div>
           <h1>Controle de Gastos</h1>
-          <p>Olá, {usuario.nome.split(" ")[0]}! Veja para onde o seu dinheiro está indo.</p>
+          <p>
+            Olá, {usuario.nome.split(" ")[0]}.{" "}
+            {mes && `Estes são os seus gastos de ${nomeDoMes(mes)}.`}
+          </p>
         </div>
         <button type="button" className="secundario com-icone" onClick={onSair}>
           <LogOut size={16} aria-hidden="true" />

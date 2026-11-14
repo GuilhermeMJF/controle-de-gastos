@@ -62,7 +62,7 @@ export default function TelaLogin({ onEntrar, mensagemInicial = "" }) {
     <div className="tela-login">
       <header className="topo centralizado">
         <h1>Controle de Gastos</h1>
-        <p>Registre seus gastos e veja para onde o dinheiro está indo.</p>
+        <p>Anote cada gasto, defina quanto quer gastar por mês e veja em quais categorias o seu dinheiro vai.</p>
       </header>
 
       <form className="cartao formulario" onSubmit={enviar}>
