@@ -51,8 +51,11 @@ def enviar_email(para_email: str, para_nome: str, assunto: str, html: str, texto
         },
         method="POST",
     )
+    # URL_BREVO é uma constante https, nunca vem do usuário
+    if pedido.type != "https":
+        raise ValueError("O envio de e-mail só aceita URLs https")
     try:
-        with urllib.request.urlopen(pedido, timeout=10) as resposta:
+        with urllib.request.urlopen(pedido, timeout=10) as resposta:  # nosemgrep: dynamic-urllib-use-detected
             resposta.read()
     except urllib.error.HTTPError as erro:
         detalhe = erro.read()[:500].decode(errors="replace")
@@ -74,7 +77,7 @@ def enviar_email_de_redefinicao(para_email: str, para_nome: str, link: str):
     )
     html = f"""
 <div style="font-family: Arial, sans-serif; max-width: 480px; color: #1f2937;">
-  <h2 style="margin-bottom: 8px;">💰 Controle de Gastos</h2>
+  <h2 style="margin-bottom: 8px;">Controle de Gastos</h2>
   <p>Olá, {escape(primeiro_nome)}!</p>
   <p>Recebemos um pedido para redefinir a senha da sua conta.</p>
   <p style="margin: 24px 0;">

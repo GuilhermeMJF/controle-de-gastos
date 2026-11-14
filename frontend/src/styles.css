@@ -1,36 +1,53 @@
+/*
+  Identidade: "anil" — a coluna de lançamento é um painel escuro anil-noite,
+  o resto da tela é claro e quieto. Números em Bricolage Grotesque, texto em
+  Atkinson Hyperlegible (feita para leitura fácil).
+*/
 :root {
-  --fundo: #f4f5f7;
+  --fundo: #eceef2; /* névoa */
   --cartao: #ffffff;
-  --texto: #1f2937;
-  --suave: #6b7280;
-  --borda: #e5e7eb;
-  --primaria: #0f766e;
-  --primaria-escura: #115e59;
-  --erro: #b91c1c;
-  --erro-fundo: #fef2f2;
-  --sucesso: #166534;
-  --sucesso-fundo: #f0fdf4;
-  --alerta: #d97706;
-  --alerta-texto: #b45309;
-  --raio: 12px;
+  --texto: #18204a; /* anil-noite */
+  --suave: #5a6275;
+  --borda: #d9dce4;
+  --primaria: #3b4fe0; /* anil */
+  --primaria-escura: #2b3cc0;
+  --painel: #18204a;
+  --painel-texto: #eef0ff;
+  --painel-suave: #a9b0d6;
+  --painel-campo: #232c5e;
+  --painel-borda: #36407a;
+  --erro: #b4302f;
+  --erro-fundo: #fbeaea;
+  --sucesso: #1d6b45;
+  --sucesso-fundo: #e6f4ec;
+  --alerta: #c47f00;
+  --alerta-texto: #8f5c00;
+  --raio: 14px;
+  --fonte-titulo: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --fonte-texto: "Atkinson Hyperlegible", system-ui, -apple-system, "Segoe UI", sans-serif;
   color-scheme: light;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --fundo: #111418;
-    --cartao: #1b2027;
-    --texto: #e5e7eb;
-    --suave: #9ca3af;
-    --borda: #2d343e;
-    --primaria: #14b8a6;
-    --primaria-escura: #0d9488;
-    --erro: #fca5a5;
-    --erro-fundo: #3b1d1d;
-    --sucesso: #86efac;
-    --sucesso-fundo: #14291c;
-    --alerta: #f59e0b;
-    --alerta-texto: #fbbf24;
+    --fundo: #0e1324;
+    --cartao: #161d35;
+    --texto: #e6e9f5;
+    --suave: #9aa2bd;
+    --borda: #273055;
+    --primaria: #8c9bff;
+    --primaria-escura: #a8b3ff;
+    --painel: #1e2860;
+    --painel-texto: #eef0ff;
+    --painel-suave: #b3badf;
+    --painel-campo: #141b44;
+    --painel-borda: #3a4590;
+    --erro: #f2a19f;
+    --erro-fundo: #3a1a22;
+    --sucesso: #8fd8b0;
+    --sucesso-fundo: #12291f;
+    --alerta: #f0a72c;
+    --alerta-texto: #f6c260;
     color-scheme: dark;
   }
 }
@@ -41,31 +58,47 @@
 
 body {
   margin: 0;
-  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  font-family: var(--fonte-texto);
+  font-size: 1rem;
+  line-height: 1.5;
   background: var(--fundo);
   color: var(--texto);
+  -webkit-font-smoothing: antialiased;
+}
+
+h1,
+h2 {
+  font-family: var(--fonte-titulo);
+  letter-spacing: -0.01em;
+  line-height: 1.15;
+}
+
+:focus-visible {
+  outline: 2px solid var(--primaria);
+  outline-offset: 2px;
 }
 
 .pagina {
-  max-width: 1440px;
+  max-width: 1320px;
   margin: 0 auto;
-  padding: 32px 32px 48px;
+  padding: 36px 32px 56px;
 }
 
 .topo h1 {
-  margin: 0 0 4px;
-  font-size: 1.75rem;
+  margin: 0 0 6px;
+  font-size: clamp(1.75rem, 3vw, 2.25rem);
+  font-weight: 800;
 }
 
 .topo p {
-  margin: 0 0 24px;
+  margin: 0 0 28px;
   color: var(--suave);
 }
 
 .grade {
   display: grid;
   grid-template-columns: 380px 1fr;
-  gap: 24px;
+  gap: 28px;
   align-items: start;
 }
 
@@ -90,19 +123,20 @@ body {
   background: var(--cartao);
   border: 1px solid var(--borda);
   border-radius: var(--raio);
-  padding: 20px;
+  padding: 22px;
 }
 
 .cartao h2 {
   margin: 0 0 16px;
-  font-size: 1.1rem;
+  font-size: 1.2rem;
+  font-weight: 700;
 }
 
 label {
   display: flex;
   flex-direction: column;
   gap: 6px;
-  font-size: 0.85rem;
+  font-size: 0.875rem;
   color: var(--suave);
   flex: 1;
 }
@@ -110,12 +144,12 @@ label {
 input,
 select {
   font: inherit;
-  font-size: 0.95rem;
+  font-size: 1rem;
   color: var(--texto);
   background: var(--fundo);
   border: 1px solid var(--borda);
   border-radius: 8px;
-  padding: 9px 10px;
+  padding: 10px 12px;
   width: 100%;
 }
 
@@ -142,7 +176,7 @@ select:focus {
 
 .campo-cor input {
   padding: 2px;
-  height: 40px;
+  height: 44px;
 }
 
 .acoes {
@@ -153,13 +187,21 @@ select:focus {
 
 button {
   font: inherit;
+  font-weight: 700;
   font-size: 0.95rem;
   border: none;
   border-radius: 8px;
-  padding: 10px 16px;
+  padding: 11px 18px;
   cursor: pointer;
   background: var(--primaria);
   color: #fff;
+  transition: background-color 0.15s;
+}
+
+@media (prefers-color-scheme: dark) {
+  button {
+    color: #0e1324;
+  }
 }
 
 button:hover:not(:disabled) {
@@ -167,7 +209,7 @@ button:hover:not(:disabled) {
 }
 
 button:disabled {
-  opacity: 0.6;
+  opacity: 0.55;
   cursor: not-allowed;
 }
 
@@ -177,7 +219,7 @@ button.secundario {
   border: 1px solid var(--borda);
 }
 
-button.secundario:hover {
+button.secundario:hover:not(:disabled) {
   background: var(--fundo);
 }
 
@@ -188,20 +230,23 @@ button.link {
   align-self: flex-start;
 }
 
-button.link:hover {
+button.link:hover:not(:disabled) {
   background: none;
   text-decoration: underline;
+  text-underline-offset: 3px;
 }
 
 button.icone {
   background: none;
-  padding: 6px;
-  font-size: 1rem;
+  padding: 6px 8px;
+  font-size: 0.85rem;
+  font-weight: 400;
   color: var(--suave);
 }
 
-button.icone:hover {
+button.icone:hover:not(:disabled) {
   background: var(--fundo);
+  color: var(--texto);
 }
 
 .nova-categoria {
@@ -223,33 +268,95 @@ button.icone:hover {
   gap: 12px;
   background: var(--erro-fundo);
   color: var(--erro);
-  border-radius: var(--raio);
+  border-radius: 10px;
   padding: 10px 14px;
   margin-bottom: 16px;
+}
+
+/* O painel de lançamento: o único elemento escuro da tela */
+aside.coluna .cartao {
+  background: var(--painel);
+  border-color: var(--painel);
+  color: var(--painel-texto);
+  border-radius: 20px;
+}
+
+aside.coluna label,
+aside.coluna .dica {
+  color: var(--painel-suave);
+}
+
+aside.coluna input,
+aside.coluna select {
+  background: var(--painel-campo);
+  border-color: var(--painel-borda);
+  color: var(--painel-texto);
+  color-scheme: dark;
+}
+
+aside.coluna input::placeholder {
+  color: var(--painel-suave);
+  opacity: 0.7;
+}
+
+aside.coluna input:focus,
+aside.coluna select:focus {
+  outline-color: var(--painel-texto);
+}
+
+aside.coluna button[type="submit"] {
+  background: var(--painel-texto);
+  color: var(--painel);
+}
+
+aside.coluna button[type="submit"]:hover:not(:disabled) {
+  background: #ffffff;
+}
+
+aside.coluna button.secundario {
+  color: var(--painel-texto);
+  border-color: var(--painel-borda);
+}
+
+aside.coluna button.secundario:hover:not(:disabled) {
+  background: var(--painel-campo);
+}
+
+aside.coluna .erro {
+  color: #ffb4b2;
+}
+
+aside.coluna > button.link {
+  padding: 4px 6px;
 }
 
 .filtros {
   display: flex;
   gap: 12px;
-  padding: 16px 20px;
+  padding: 16px 22px;
 }
 
+/* Total do período: o número mais importante da tela */
 .resumo .rotulo {
   margin: 0;
   color: var(--suave);
-  font-size: 0.85rem;
+  font-size: 0.9rem;
 }
 
 .resumo .total {
-  margin: 4px 0 0;
-  font-size: 2rem;
-  font-weight: 700;
+  margin: 2px 0 0;
+  font-family: var(--fonte-titulo);
+  font-size: clamp(2.5rem, 5vw, 3.5rem);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1.05;
+  font-variant-numeric: tabular-nums;
 }
 
 .barras {
   list-style: none;
   padding: 0;
-  margin: 18px 0 0;
+  margin: 22px 0 0;
   display: flex;
   flex-direction: column;
   gap: 12px;
@@ -258,12 +365,14 @@ button.icone:hover {
 .barra-legenda {
   display: flex;
   justify-content: space-between;
-  font-size: 0.85rem;
+  gap: 12px;
+  font-size: 0.9rem;
   margin-bottom: 4px;
 }
 
 .barra-legenda span:last-child {
   color: var(--suave);
+  font-variant-numeric: tabular-nums;
 }
 
 .barra-fundo {
@@ -299,7 +408,7 @@ button.icone:hover {
 .marcador {
   width: 10px;
   height: 10px;
-  border-radius: 50%;
+  border-radius: 3px;
   flex-shrink: 0;
 }
 
@@ -318,15 +427,35 @@ button.icone:hover {
 
 .item-info small {
   color: var(--suave);
+  font-size: 0.85rem;
 }
 
 .item-valor {
-  font-weight: 600;
+  font-family: var(--fonte-titulo);
+  font-weight: 700;
+  font-size: 1.05rem;
   white-space: nowrap;
+  font-variant-numeric: tabular-nums;
 }
 
 .item-acoes {
   display: flex;
+}
+
+@media (max-width: 520px) {
+  .item {
+    flex-wrap: wrap;
+  }
+
+  .item-acoes {
+    width: 100%;
+    justify-content: flex-end;
+    margin-top: -4px;
+  }
+
+  .filtros {
+    flex-direction: column;
+  }
 }
 
 .vazio {
@@ -337,13 +466,22 @@ button.icone:hover {
 
 /* Login */
 .tela-login {
-  max-width: 400px;
+  max-width: 420px;
   margin: 0 auto;
-  padding: 48px 16px;
+  padding: 56px 16px;
 }
 
 .centralizado {
   text-align: center;
+}
+
+.tela-login .topo h1 {
+  font-size: clamp(1.75rem, 7vw, 2.25rem);
+}
+
+.tela-login .cartao {
+  border-radius: 20px;
+  padding: 26px;
 }
 
 .tela-login .formulario button[type="submit"] {
@@ -369,7 +507,7 @@ button.icone:hover {
 }
 
 .aviso-topo {
-  max-width: 400px;
+  max-width: 388px;
   margin: 24px auto 0;
 }
 
@@ -456,7 +594,7 @@ button.icone:hover {
   display: flex;
   justify-content: space-between;
   gap: 12px;
-  font-size: 0.85rem;
+  font-size: 0.9rem;
 }
 
 .limite-cabecalho {
@@ -467,19 +605,20 @@ button.icone:hover {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  font-weight: 600;
+  font-weight: 700;
   color: var(--texto);
 }
 
 .limite-valores {
   color: var(--suave);
   white-space: nowrap;
+  font-variant-numeric: tabular-nums;
 }
 
 .limite-rodape {
   margin-top: 4px;
   color: var(--suave);
-  font-size: 0.8rem;
+  font-size: 0.85rem;
 }
 
 .barra-normal {
@@ -496,18 +635,18 @@ button.icone:hover {
 
 .texto-alerta {
   color: var(--alerta-texto);
-  font-weight: 600;
+  font-weight: 700;
 }
 
 .texto-estourado {
   color: var(--erro);
-  font-weight: 600;
+  font-weight: 700;
 }
 
 .editor-limites .subtitulo {
   margin: 4px 0 0;
-  font-size: 0.85rem;
-  font-weight: 600;
+  font-size: 0.9rem;
+  font-weight: 700;
   color: var(--suave);
 }
 
@@ -525,20 +664,19 @@ button.icone:hover {
 /* Gráfico dos últimos meses */
 .legenda-limite {
   color: var(--erro);
-  font-size: 0.8rem;
+  font-size: 0.85rem;
   white-space: nowrap;
 }
 
 .dica-grafico {
   background: var(--cartao);
   border: 1px solid var(--borda);
-  border-radius: 8px;
+  border-radius: 10px;
   padding: 10px 12px;
   display: flex;
   flex-direction: column;
   gap: 4px;
   font-size: 0.85rem;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
 }
 
 .dica-grafico strong::first-letter {
@@ -546,8 +684,10 @@ button.icone:hover {
 }
 
 .dica-total {
-  font-size: 1.1rem;
-  font-weight: 700;
+  font-family: var(--fonte-titulo);
+  font-size: 1.2rem;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
 }
 
 .dica-grafico ul {
@@ -572,15 +712,21 @@ button.icone:hover {
 
 .dica-rodape {
   margin: 8px 0 0;
-  font-size: 0.8rem;
+  font-size: 0.85rem;
   color: var(--suave);
   text-align: center;
 }
 
-/* O formulário acompanha a rolagem em telas grandes */
+/* O painel de lançamento acompanha a rolagem em telas grandes */
 @media (min-width: 801px) {
   aside.coluna {
     position: sticky;
     top: 24px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition: none !important;
   }
 }

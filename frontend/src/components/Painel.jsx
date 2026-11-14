@@ -123,7 +123,7 @@ export default function Painel({ usuario, onSair }) {
     <div className="pagina">
       <header className="topo topo-logado">
         <div>
-          <h1>💰 Controle de Gastos</h1>
+          <h1>Controle de Gastos</h1>
           <p>Olá, {usuario.nome.split(" ")[0]}! Veja para onde o seu dinheiro está indo.</p>
         </div>
         <button type="button" className="secundario" onClick={onSair}>

@@ -27,7 +27,7 @@ export default function TelaRedefinirSenha({ token, onConcluir, onCancelar }) {
   return (
     <div className="tela-login">
       <header className="topo centralizado">
-        <h1>💰 Controle de Gastos</h1>
+        <h1>Controle de Gastos</h1>
         <p>Crie uma nova senha para a sua conta.</p>
       </header>
 

@@ -61,7 +61,7 @@ export default function TelaLogin({ onEntrar, mensagemInicial = "" }) {
   return (
     <div className="tela-login">
       <header className="topo centralizado">
-        <h1>💰 Controle de Gastos</h1>
+        <h1>Controle de Gastos</h1>
         <p>Registre seus gastos e veja para onde o dinheiro está indo.</p>
       </header>
 

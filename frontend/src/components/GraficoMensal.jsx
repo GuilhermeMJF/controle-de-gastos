@@ -12,9 +12,9 @@ import {
 import { formatarMoeda, formatarMoedaCurta, nomeCurtoDoMes, nomeDoMes } from "../utils.js";
 
 // Cores fixas que funcionam tanto no tema claro quanto no escuro
-const COR_NORMAL = "#14b8a6";
-const COR_ESTOUROU = "#ef4444";
-const COR_TEXTO = "#9ca3af";
+const COR_NORMAL = "#5b6cf0";
+const COR_ESTOUROU = "#d9534f";
+const COR_TEXTO = "#8a91a3";
 
 // Caixinha que aparece ao passar o mouse (ou tocar) numa barra
 function DicaDoMes({ active, payload }) {

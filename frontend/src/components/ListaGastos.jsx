@@ -22,16 +22,21 @@ export default function ListaGastos({ gastos, carregando, onEditar, onExcluir })
           </div>
           <span className="item-valor">{formatarMoeda(gasto.valor)}</span>
           <div className="item-acoes">
-            <button type="button" className="icone" onClick={() => onEditar(gasto)} title="Editar">
-              ✏️
+            <button
+              type="button"
+              className="icone"
+              onClick={() => onEditar(gasto)}
+              aria-label={`Editar ${gasto.descricao}`}
+            >
+              Editar
             </button>
             <button
               type="button"
               className="icone"
               onClick={() => onExcluir(gasto)}
-              title="Excluir"
+              aria-label={`Excluir ${gasto.descricao}`}
             >
-              🗑️
+              Excluir
             </button>
           </div>
         </li>
