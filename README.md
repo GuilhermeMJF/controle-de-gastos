@@ -1,6 +1,6 @@
 # Controle de Gastos
 
-Site: https://controle-de-gastos-psi-six.vercel.app
+Site: https://controle-de-gastos.luizguilhermemarcondesjf.workers.dev
 
 Aplicação web para registrar gastos pessoais e organizá-los por categoria. Você cadastra o que gastou, filtra por mês e categoria e vê, na hora, quanto saiu no período e para onde foi o dinheiro.
 
@@ -180,7 +180,7 @@ Exemplo de gasto:
 - [x] Resumo mensal com gráfico de evolução
 - [x] Limite de gastos mensal, no total e por categoria
 - [x] Login de usuários (cada pessoa vê só os próprios gastos)
-- [x] Deploy online (Neon para o banco, Render para a API e Vercel para o front)
+- [x] Deploy online (Neon para o banco, Render para a API e Cloudflare Workers para o front)
 - [x] Recuperação de senha por e-mail
 
 ## Autor
