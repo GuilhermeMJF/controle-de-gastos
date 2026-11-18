@@ -3,6 +3,11 @@
   "name": "controle-de-gastos",
   "compatibility_date": "2026-11-18",
   "workers_dev": true,
+  // Domínio próprio; o Cloudflare cria o DNS e o certificado HTTPS sozinho
+  "routes": [
+    { "pattern": "controledegastos.dev.br", "custom_domain": true },
+    { "pattern": "www.controledegastos.dev.br", "custom_domain": true }
+  ],
   // Só o site estático; a API continua no Render
   "assets": {
     "directory": "./dist",
