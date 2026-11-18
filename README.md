@@ -1,6 +1,6 @@
 # Controle de Gastos
 
-Site: https://controle-de-gastos.luizguilhermemarcondesjf.workers.dev
+Site: https://controledegastos.dev.br
 
 Aplicação web para registrar gastos pessoais e organizá-los por categoria. Você cadastra o que gastou, filtra por mês e categoria e vê, na hora, quanto saiu no período e para onde foi o dinheiro.
 
