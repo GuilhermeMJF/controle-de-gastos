@@ -2,6 +2,7 @@
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "controle-de-gastos",
   "compatibility_date": "2026-11-18",
+  "workers_dev": true,
   // Só o site estático; a API continua no Render
   "assets": {
     "directory": "./dist",
