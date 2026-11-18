@@ -69,6 +69,8 @@ export const api = {
       body: JSON.stringify({ token, nova_senha: novaSenha }),
     }),
 
+  eu: () => request("/auth/me"),
+
   listarCategorias: () => request("/categorias"),
   criarCategoria: (dados) =>
     request("/categorias", { method: "POST", body: JSON.stringify(dados) }),
@@ -95,4 +97,18 @@ export const api = {
     request(categoriaId == null ? "/limites/total" : `/limites/categorias/${categoriaId}`, {
       method: "DELETE",
     }),
+
+  admin: {
+    resumo: () => request("/admin/resumo"),
+    listarContas: (busca = "") => request(comFiltros("/admin/usuarios", { busca })),
+    editarConta: (id, dados) =>
+      request(`/admin/usuarios/${id}`, { method: "PATCH", body: JSON.stringify(dados) }),
+    bloquear: (id) => request(`/admin/usuarios/${id}/bloquear`, { method: "POST" }),
+    desbloquear: (id) => request(`/admin/usuarios/${id}/desbloquear`, { method: "POST" }),
+    encerrarSessoes: (id) =>
+      request(`/admin/usuarios/${id}/encerrar-sessoes`, { method: "POST" }),
+    enviarLinkSenha: (id) =>
+      request(`/admin/usuarios/${id}/enviar-link-senha`, { method: "POST" }),
+    excluirConta: (id) => request(`/admin/usuarios/${id}`, { method: "DELETE" }),
+  },
 };

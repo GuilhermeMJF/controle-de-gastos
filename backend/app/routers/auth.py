@@ -9,7 +9,7 @@ from sqlalchemy.orm import Session
 from .. import envio_email
 from ..config import FRONTEND_URL, REDEFINICAO_EXPIRA_MINUTOS
 from ..database import get_db
-from ..dependencias import get_usuario_atual
+from ..dependencias import MENSAGEM_CONTA_BLOQUEADA, get_usuario_atual
 from ..limitador import Limitador
 from ..models import RedefinicaoSenha, Usuario
 from ..schemas import (
@@ -125,7 +125,39 @@ def entrar(dados: LoginIn, request: Request, db: Session = Depends(get_db)):
         raise HTTPException(status.HTTP_401_UNAUTHORIZED, "E-mail ou senha incorretos")
 
     LIMITE_LOGIN_POR_EMAIL.esquecer(dados.email)  # acertou: zera os erros dessa conta
+    # Só depois da senha certa, para não revelar a estranhos que a conta existe
+    if usuario.bloqueado:
+        raise HTTPException(status.HTTP_403_FORBIDDEN, MENSAGEM_CONTA_BLOQUEADA)
     return _resposta_com_token(usuario)
+
+
+def enviar_link_de_redefinicao(db: Session, usuario: Usuario, tarefas: BackgroundTasks) -> bool:
+    """Cria o link e agenda o e-mail. False se já saiu um link há menos de 2 minutos."""
+    ultimo_pedido = db.scalar(
+        select(RedefinicaoSenha.criado_em)
+        .where(RedefinicaoSenha.usuario_id == usuario.id)
+        .order_by(RedefinicaoSenha.criado_em.desc())
+        .limit(1)
+    )
+    agora = _agora()
+    if ultimo_pedido is not None and agora - _em_utc(ultimo_pedido) < INTERVALO_ENTRE_PEDIDOS:
+        return False
+
+    token, token_hash = gerar_token_de_redefinicao()
+    db.add(
+        RedefinicaoSenha(
+            usuario_id=usuario.id,
+            token_hash=token_hash,
+            criado_em=agora,
+            expira_em=agora + timedelta(minutes=REDEFINICAO_EXPIRA_MINUTOS),
+        )
+    )
+    db.commit()
+    link = f"{FRONTEND_URL}/?redefinir={token}"
+    # O e-mail sai depois da resposta: assim o tempo de resposta é parecido
+    # com o de um e-mail não cadastrado
+    tarefas.add_task(envio_email.enviar_email_de_redefinicao, usuario.email, usuario.nome, link)
+    return True
 
 
 @router.post(
@@ -143,34 +175,9 @@ def esqueci_senha(
     LIMITE_ESQUECI_SENHA_POR_IP.registrar(ip)
 
     usuario = db.scalar(select(Usuario).where(Usuario.email == dados.email))
-
-    if usuario is not None:
-        ultimo_pedido = db.scalar(
-            select(RedefinicaoSenha.criado_em)
-            .where(RedefinicaoSenha.usuario_id == usuario.id)
-            .order_by(RedefinicaoSenha.criado_em.desc())
-            .limit(1)
-        )
-        agora = _agora()
-        pode_enviar = ultimo_pedido is None or agora - _em_utc(ultimo_pedido) >= INTERVALO_ENTRE_PEDIDOS
-
-        if pode_enviar:
-            token, token_hash = gerar_token_de_redefinicao()
-            db.add(
-                RedefinicaoSenha(
-                    usuario_id=usuario.id,
-                    token_hash=token_hash,
-                    criado_em=agora,
-                    expira_em=agora + timedelta(minutes=REDEFINICAO_EXPIRA_MINUTOS),
-                )
-            )
-            db.commit()
-            link = f"{FRONTEND_URL}/?redefinir={token}"
-            # O e-mail sai depois da resposta: assim o tempo de resposta é parecido
-            # com o de um e-mail não cadastrado
-            tarefas.add_task(
-                envio_email.enviar_email_de_redefinicao, usuario.email, usuario.nome, link
-            )
+    # Conta bloqueada não recebe link, mas a resposta é a mesma
+    if usuario is not None and not usuario.bloqueado:
+        enviar_link_de_redefinicao(db, usuario, tarefas)
 
     # Mesma resposta sempre, para não revelar quais e-mails estão cadastrados
     return MensagemOut(mensagem=MENSAGEM_ESQUECI_SENHA)

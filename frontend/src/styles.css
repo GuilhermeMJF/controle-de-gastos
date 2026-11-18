@@ -747,3 +747,126 @@ aside.coluna > button.link {
     transition: none !important;
   }
 }
+
+/* Administração */
+.topo-acoes {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.admin-resumo {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 40px;
+  align-items: start;
+  margin-bottom: 28px;
+}
+
+.admin-resumo h2 {
+  margin: 0 0 12px;
+  font-size: 1.2rem;
+}
+
+.admin-numeros {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.admin-numeros p {
+  margin: 0;
+  color: var(--suave);
+}
+
+.admin-numero {
+  display: block;
+  font-family: var(--fonte-titulo);
+  font-size: 2.75rem;
+  font-weight: 800;
+  line-height: 1;
+  color: var(--texto);
+  font-variant-numeric: tabular-nums;
+}
+
+.admin-meses {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.admin-meses li {
+  display: grid;
+  grid-template-columns: 56px 1fr 32px;
+  align-items: center;
+  gap: 12px;
+  font-size: 0.9rem;
+}
+
+.admin-mes {
+  color: var(--suave);
+}
+
+.admin-qtd {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.admin-busca {
+  margin-bottom: 8px;
+}
+
+.admin-sucesso {
+  margin-bottom: 16px;
+}
+
+.admin-edicao {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+}
+
+.selo {
+  font-size: 0.8rem;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 4px;
+  background: var(--fundo);
+  color: var(--suave);
+  white-space: nowrap;
+}
+
+.selo-bloqueado {
+  background: var(--erro-fundo);
+  color: var(--erro);
+}
+
+button.icone-perigo:hover:not(:disabled) {
+  color: var(--erro);
+}
+
+@media (max-width: 700px) {
+  .admin-resumo {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+
+  .admin-numeros {
+    flex-direction: row;
+    gap: 32px;
+  }
+
+  .admin-contas .item {
+    flex-wrap: wrap;
+  }
+
+  .admin-contas .item-acoes {
+    width: 100%;
+    justify-content: flex-end;
+  }
+}

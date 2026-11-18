@@ -38,5 +38,11 @@ BREVO_API_KEY = os.getenv("BREVO_API_KEY", "")
 EMAIL_REMETENTE = os.getenv("EMAIL_REMETENTE", "")
 NOME_REMETENTE = os.getenv("NOME_REMETENTE", "Controle de Gastos")
 
+# E-mails com acesso à área de administração (separados por vírgula).
+# Fica na configuração, e não no banco, para ninguém conseguir virar administrador pelo site.
+ADMIN_EMAILS = {
+    email.strip().lower() for email in os.getenv("ADMIN_EMAILS", "").split(",") if email.strip()
+}
+
 # Quanto tempo o link de redefinição de senha vale
 REDEFINICAO_EXPIRA_MINUTOS = int(os.getenv("REDEFINICAO_EXPIRA_MINUTOS", "30"))

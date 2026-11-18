@@ -1,4 +1,4 @@
-from datetime import date
+from datetime import date, datetime
 from decimal import Decimal
 from typing import Annotated
 
@@ -40,6 +40,7 @@ class UsuarioOut(BaseModel):
     id: int
     nome: str
     email: str
+    admin: bool = False
 
 
 class EsqueciSenhaIn(BaseModel):
@@ -150,3 +151,33 @@ class MesResumo(BaseModel):
 
 class ResumoMensalOut(BaseModel):
     meses: list[MesResumo]
+
+# --- Administração ---
+
+
+class UsuarioAdminOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: int
+    nome: str
+    email: str
+    criado_em: datetime
+    bloqueado: bool
+    admin: bool
+    quantidade_gastos: int
+
+
+class UsuarioAdminUpdate(BaseModel):
+    nome: str | None = Field(default=None, min_length=1, max_length=80)
+    email: Email | None = None
+
+
+class ContasNoMes(BaseModel):
+    mes: str  # AAAA-MM
+    quantidade: int
+
+
+class ResumoAdminOut(BaseModel):
+    total_contas: int
+    contas_bloqueadas: int
+    contas_por_mes: list[ContasNoMes]

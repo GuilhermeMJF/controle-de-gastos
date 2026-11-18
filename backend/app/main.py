@@ -8,7 +8,7 @@ from sqlalchemy import inspect, make_url, select, text
 from .config import CORS_ORIGINS, DATABASE_URL, JWT_SECRET, JWT_SECRET_PADRAO
 from .database import Base, SessionLocal, engine
 from .models import Categoria, Gasto, Limite
-from .routers import auth, categorias, gastos, limites
+from .routers import admin, auth, categorias, gastos, limites
 
 logger = logging.getLogger("controle_de_gastos")
 
@@ -47,6 +47,7 @@ def _adicionar_colunas_novas():
     colunas_novas = {
         "usuarios": {
             "versao_sessao": "ALTER TABLE usuarios ADD COLUMN versao_sessao INTEGER NOT NULL DEFAULT 0",
+            "bloqueado": "ALTER TABLE usuarios ADD COLUMN bloqueado BOOLEAN NOT NULL DEFAULT FALSE",
         },
     }
     inspetor = inspect(engine)
@@ -174,6 +175,7 @@ app.add_middleware(
 )
 
 app.include_router(auth.router)
+app.include_router(admin.router)
 app.include_router(categorias.router)
 app.include_router(gastos.router)
 app.include_router(limites.router)

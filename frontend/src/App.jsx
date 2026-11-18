@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
+import { api } from "./api.js";
 import Painel from "./components/Painel.jsx";
+import TelaAdmin from "./components/TelaAdmin.jsx";
 import TelaLogin from "./components/TelaLogin.jsx";
 import TelaRedefinirSenha from "./components/TelaRedefinirSenha.jsx";
 import {
@@ -27,6 +29,7 @@ export default function App() {
   const [tokenRedefinicao, setTokenRedefinicao] = useState(lerTokenDaUrl);
   const [aviso, setAviso] = useState("");
   const [mensagemLogin, setMensagemLogin] = useState("");
+  const [naAdministracao, setNaAdministracao] = useState(false);
 
   function entrar(novaSessao) {
     salvarSessao(novaSessao);
@@ -38,6 +41,7 @@ export default function App() {
   function sair() {
     limparSessao();
     setSessao(null);
+    setNaAdministracao(false);
   }
 
   function senhaRedefinida(mensagem) {
@@ -52,11 +56,26 @@ export default function App() {
     limparTokenDaUrl();
   }, []);
 
+  // Atualiza os dados da conta (ex.: se é administrador) em logins feitos antes dessa informação existir
+  const token = sessao?.token;
+  useEffect(() => {
+    if (!token) return;
+    api
+      .eu()
+      .then((usuario) => {
+        const atualizada = { token, usuario };
+        salvarSessao(atualizada);
+        setSessao(atualizada);
+      })
+      .catch(() => {}); // sessão expirada já é tratada pelo evento abaixo
+  }, [token]);
+
   // Se a API recusar o token (vencido ou inválido), volta para o login
   useEffect(() => {
     function aoExpirar() {
       limparSessao();
       setSessao(null);
+      setNaAdministracao(false);
       setAviso("Sua sessão expirou. Entre novamente.");
     }
     window.addEventListener(EVENTO_SESSAO_EXPIRADA, aoExpirar);
@@ -87,6 +106,17 @@ export default function App() {
     );
   }
 
+  if (naAdministracao && sessao.usuario.admin) {
+    return <TelaAdmin usuario={sessao.usuario} onVoltar={() => setNaAdministracao(false)} />;
+  }
+
   // key: ao trocar de conta, o painel começa do zero
-  return <Painel key={sessao.usuario.id} usuario={sessao.usuario} onSair={sair} />;
+  return (
+    <Painel
+      key={sessao.usuario.id}
+      usuario={sessao.usuario}
+      onSair={sair}
+      onAbrirAdministracao={() => setNaAdministracao(true)}
+    />
+  );
 }

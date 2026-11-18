@@ -1,9 +1,10 @@
 from datetime import date, datetime
 from decimal import Decimal
 
-from sqlalchemy import Date, DateTime, ForeignKey, Integer, Numeric, String, func
+from sqlalchemy import Boolean, Date, DateTime, ForeignKey, Integer, Numeric, String, false, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
+from . import config
 from .database import Base
 
 
@@ -20,10 +21,16 @@ class Usuario(Base):
     # Vai junto no token de login. Quando a senha é redefinida, o número aumenta
     # e todos os tokens antigos (de qualquer aparelho) deixam de valer.
     versao_sessao: Mapped[int] = mapped_column(Integer, default=0, server_default="0")
+    # Conta bloqueada pelo administrador: não consegue entrar nem pedir nova senha
+    bloqueado: Mapped[bool] = mapped_column(Boolean, default=False, server_default=false())
 
     gastos: Mapped[list["Gasto"]] = relationship(
         back_populates="usuario", cascade="all, delete-orphan"
     )
+
+    @property
+    def admin(self) -> bool:
+        return self.email in config.ADMIN_EMAILS
 
 
 class RedefinicaoSenha(Base):

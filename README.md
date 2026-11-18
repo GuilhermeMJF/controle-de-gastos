@@ -14,6 +14,7 @@ Aplicação web para registrar gastos pessoais e organizá-los por categoria. Vo
 - Filtrar gastos por mês e por categoria
 - Total do período e participação de cada categoria no total
 - Categorias padrão já criadas (Alimentação, Transporte, Moradia, Lazer, Saúde, Outros) e opção de criar novas com cor própria
+- Área de administração para o dono do site: lista de contas com busca, contas novas por mês, editar nome e e-mail, bloquear, encerrar sessões, enviar link de nova senha e excluir conta. Os gastos de cada pessoa não aparecem para o administrador
 - Validações na API: valor positivo com no máximo 2 casas decimais, categoria existente, nomes de categoria sem repetição e proteção contra excluir categoria em uso
 
 ## Como funciona o login
@@ -114,6 +115,7 @@ Variáveis de ambiente da API:
 | `CORS_ORIGINS` | Endereços do front-end que podem chamar a API, separados por vírgula |
 | `FRONTEND_URL` | Endereço do site usado no link do e-mail. Se não for definido, usa o primeiro de `CORS_ORIGINS` |
 | `BREVO_API_KEY` | Chave da API do Brevo, para enviar e-mails |
+| `ADMIN_EMAILS` | E-mails com acesso à área de administração, separados por vírgula. Sem ela, ninguém é administrador |
 | `EMAIL_REMETENTE` | E-mail verificado no Brevo que aparece como remetente |
 
 #### 3. Front-end
@@ -163,6 +165,13 @@ Todas as rotas, menos cadastro, login e recuperação de senha, exigem o cabeça
 | PUT | `/limites/categorias/{id}` | Define (ou altera) o limite de uma categoria |
 | DELETE | `/limites/categorias/{id}` | Remove o limite de uma categoria |
 | GET | `/limites/resumo?mes=AAAA-MM` | Quanto já foi gasto no mês em comparação com cada limite |
+| GET | `/admin/resumo` | Total de contas, contas bloqueadas e contas novas por mês (só administrador) |
+| GET | `/admin/usuarios?busca=` | Lista as contas, sem os gastos (só administrador) |
+| PATCH | `/admin/usuarios/{id}` | Edita nome e e-mail de uma conta (só administrador) |
+| POST | `/admin/usuarios/{id}/bloquear` e `/desbloquear` | Bloqueia ou libera uma conta (só administrador) |
+| POST | `/admin/usuarios/{id}/encerrar-sessoes` | Encerra todos os logins da conta (só administrador) |
+| POST | `/admin/usuarios/{id}/enviar-link-senha` | Envia o link de nova senha por e-mail (só administrador) |
+| DELETE | `/admin/usuarios/{id}` | Exclui a conta com todos os dados dela (só administrador) |
 
 Exemplo de gasto:
 

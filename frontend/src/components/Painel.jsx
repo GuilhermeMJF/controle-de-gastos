@@ -1,4 +1,4 @@
-import { LogOut, X } from "lucide-react";
+import { LogOut, ShieldCheck, X } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { api } from "../api.js";
 import { intervaloDoMes, mesAtual, nomeDoMes } from "../utils.js";
@@ -10,7 +10,7 @@ import ListaGastos from "./ListaGastos.jsx";
 import NovaCategoria from "./NovaCategoria.jsx";
 import ResumoCategorias from "./ResumoCategorias.jsx";
 
-export default function Painel({ usuario, onSair }) {
+export default function Painel({ usuario, onSair, onAbrirAdministracao }) {
   const [categorias, setCategorias] = useState([]);
   const [gastos, setGastos] = useState([]);
   const [mes, setMes] = useState(mesAtual());
@@ -130,10 +130,18 @@ export default function Painel({ usuario, onSair }) {
             {mes && `Estes são os seus gastos de ${nomeDoMes(mes)}.`}
           </p>
         </div>
-        <button type="button" className="secundario com-icone" onClick={onSair}>
-          <LogOut size={16} aria-hidden="true" />
-          Sair
-        </button>
+        <div className="topo-acoes">
+          {usuario.admin && (
+            <button type="button" className="secundario com-icone" onClick={onAbrirAdministracao}>
+              <ShieldCheck size={16} aria-hidden="true" />
+              Administração
+            </button>
+          )}
+          <button type="button" className="secundario com-icone" onClick={onSair}>
+            <LogOut size={16} aria-hidden="true" />
+            Sair
+          </button>
+        </div>
       </header>
 
       {erro && (
